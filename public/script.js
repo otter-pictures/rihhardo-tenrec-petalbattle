@@ -35,8 +35,8 @@ function renderAudienceView(gameState) {
 
     // Update the audience interface
     audienceInterface.innerHTML = `
-        <h2>Current Question: ${currentQuestion.question}</h2>
-        <h3>Total Points on the Board: ${totalRevealedPoints}</h3>
+        <h2>${currentQuestion.question}</h2>
+        <h3>${totalRevealedPoints}</h3>
         <ul>
             ${currentQuestion.answers.map((answer) => `
                 <li>${answer.revealed ? `${answer.answer} (${answer.points} points)` : '???'}</li>
@@ -51,7 +51,7 @@ function renderAudienceView(gameState) {
     `;
 }
 
-// Render Host Interface - Host can edit team names
+// Render Host Interface
 function renderHostView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
@@ -60,7 +60,8 @@ function renderHostView(gameState) {
         <ul>
             ${currentQuestion.answers.map((answer, index) => `
                 <li>${answer.answer} (${answer.points} points)
-                <button onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})">
+                <button onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
+                        ${answer.revealed ? 'disabled' : ''}>
                     ${answer.revealed ? 'Revealed' : 'Reveal'}
                 </button>
                 </li>
