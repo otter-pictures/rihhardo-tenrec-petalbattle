@@ -12,11 +12,13 @@ const io = socketIo(server);
 let gameState = {
     currentQuestionIndex: 0,
     questions: [],
-    revealedAnswers: [],
     teamScores: [0, 0],
     wrongAnswers: [0, 0],
-    teamNames: ['Team 1', 'Team 2']  // Add default team names
+    teamNames: ['Team 1', 'Team 2']  // Default team names
 };
+
+// Track which team was assigned points for the current question
+let assignedTeam = null;
 
 // Load questions from CSV
 const loadQuestions = () => {
@@ -72,11 +74,37 @@ io.on('connection', (socket) => {
         io.emit('game-update', gameState);
     });
 
-    // Host assigns points to a team
-    socket.on('assign-points', (data) => {
+    // Host assigns revealed points to a team
+    socket.on('assign-revealed-points', (data) => {
         const { teamIndex, points } = data;
-        gameState.teamScores[teamIndex] += points;  // Update the team score
-        io.emit('game-update', gameState);  // Broadcast the updated game state to all clients
+
+        // If points have already been assigned to the opposite team, deduct from them
+        if (assignedTeam !== null && assignedTeam !== teamIndex) {
+            gameState.teamScores[assignedTeam] -= points;
+            console.log(`Deducted ${points} points from Team ${assignedTeam + 1}`);
+        }
+
+        // Assign points to the selected team
+        gameState.teamScores[teamIndex] += points;
+        console.log(`Assigned ${points} points to Team ${teamIndex + 1}`);
+
+        // Update the assigned team for the current question
+        assignedTeam = teamIndex;
+
+        // Emit the updated game state to all clients
+        io.emit('game-update', gameState);
+    });
+
+    // Host sets manual points for a team
+    socket.on('set-manual-points', (data) => {
+        const { teamIndex, points } = data;
+
+        // Directly set the team's score
+        gameState.teamScores[teamIndex] = points;
+        console.log(`Manually set Team ${teamIndex + 1} score to ${points}`);
+
+        // Emit the updated game state to all clients
+        io.emit('game-update', gameState);
     });
 
     // Track wrong answers
@@ -94,7 +122,11 @@ io.on('connection', (socket) => {
         } else if (direction === 'prev' && gameState.currentQuestionIndex > 0) {
             gameState.currentQuestionIndex -= 1;
         }
-        io.emit('game-update', gameState); // Broadcast updated state
+
+        // Reset wrong answer counters when switching to a new question
+        gameState.wrongAnswers = [0, 0];  
+
+        io.emit('game-update', gameState);  // Broadcast updated state
     });
 
     socket.on('disconnect', () => {
