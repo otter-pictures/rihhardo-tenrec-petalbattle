@@ -1,104 +1,148 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Global Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-color: #f9fafb;
+    color: #333;
+    overflow-x: hidden;
 }
 
 button {
-    padding: 10px;
-    margin: 5px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
 }
 
 h1 {
     margin-top: 20px;
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
 }
 
 ul {
     list-style: none;
+    padding: 0;
 }
 
-.audience-container {
+/* Layout for Audience and Host Container */
+.audience-container, .host-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 100vh;
-    padding: 20px;
+    min-height: 100vh;
+    padding: 40px;
     box-sizing: border-box;
-    background-color: #f4f4f9;
 }
 
+/* Team containers */
 .team-left, .team-right {
-    width: 20%;
-    text-align: center;
-    padding: 10px;
-}
-
-.question-center {
-    width: 50%;
+    width: 22%;
     text-align: center;
     padding: 20px;
     background-color: #ffffff;
     border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.team-left h3, .team-right h3 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #2c3e50;
+}
+
+.team-left p, .team-right p {
+    font-size: 22px;
+    color: #34495e;
+}
+
+/* Middle Question and Answer Container */
+.question-center {
+    width: 50%;
+    text-align: center;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.question-center h2 {
+    font-size: 34px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.question-center h3 {
+    font-size: 24px;
+    font-weight: normal;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+/* Answer Table */
 .answer-table {
-    margin: 20px auto;
-    border-collapse: collapse;
     width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
 }
 
 .answer-table td {
     padding: 20px;
-    border: 2px solid #ccc;
+    border: 1px solid #e0e0e0;
     text-align: center;
-    font-size: 18px;
-    width: 50%; /* Ensure all cells take up equal width */
-    height: 88px; /* Set a fixed height to prevent resizing */
-    background-color: #f9f9f9;
+    font-size: 20px;
+    color: #333;
+    height: 88px; /* Set fixed height to prevent resizing */
     transition: background-color 0.3s ease;
+}
+
+.answer-table td.revealed {
+    background-color: #ecf0f1;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.answer-table td.unrevealed {
+    background-color: #f9f9f9;
 }
 
 .answer-table td:hover {
     background-color: #e0e0e0;
 }
 
-.team-left h3, .team-right h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.team-left p, .team-right p {
-    font-size: 20px;
-    color: #333;
-}
-
-.question-center h2 {
-    font-size: 32px;
-    margin-bottom: 20px;
-}
-
-.question-center h3 {
-    font-size: 22px;
-    margin-bottom: 20px;
-}
-
-.team-left p, .team-right p {
-    font-size: 24px;
-    margin-top: 10px;
-}
-
+/* Wrong Answers Display */
 .team-left p:last-child, .team-right p:last-child {
     font-size: 28px;
-    color: red;
-    margin-top: 5px;
+    color: #e74c3c;
+    margin-top: 10px;
+    letter-spacing: 5px;
 }
 
+/* Host and Audience Interfaces */
 #host-interface, #audience-interface {
-    margin: 64px auto;
-    max-width: full;
+    padding: 20px;
+    max-width: 100%;
     text-align: left;
+    background-color: #f9fafb;
 }
