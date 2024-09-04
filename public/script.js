@@ -14,7 +14,7 @@ socket.on('game-update', (gameState) => {
     }
 });
 
-// Render Host Interface - Host can always see answers
+// Render Host Interface - Host can edit team names
 function renderHostView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
     hostInterface.innerHTML = `
@@ -32,16 +32,29 @@ function renderHostView(gameState) {
             <button onclick="prevQuestion()">Previous Question</button>
             <button onclick="nextQuestion()">Next Question</button>
         </div>
+        <h3>Edit Team Names</h3>
+        <div>
+            <label>Team 1 Name: </label>
+            <input type="text" value="${gameState.teamNames[0]}" onchange="updateTeamName(0, this.value)" />
+        </div>
+        <div>
+            <label>Team 2 Name: </label>
+            <input type="text" value="${gameState.teamNames[1]}" onchange="updateTeamName(1, this.value)" />
+        </div>
         <h3>Assign Points</h3>
-        <button onclick="assignPoints(0)">Assign to Team 1</button>
-        <button onclick="assignPoints(1)">Assign to Team 2</button>
+        <button onclick="assignPoints(0)">Assign to ${gameState.teamNames[0]}</button>
+        <button onclick="assignPoints(1)">Assign to ${gameState.teamNames[1]}</button>
         <h3>Wrong Answers</h3>
-        <button onclick="incrementWrongAnswer(0)">Team 1 Wrong Answer</button>
-        <button onclick="incrementWrongAnswer(1)">Team 2 Wrong Answer</button>
+        <button onclick="incrementWrongAnswer(0)">${gameState.teamNames[0]} Wrong Answer</button>
+        <button onclick="incrementWrongAnswer(1)">${gameState.teamNames[1]} Wrong Answer</button>
     `;
 }
 
-// Render Audience Interface - Audience sees "???" until answers are revealed
+// Emit Socket event to update team names
+function updateTeamName(teamIndex, newName) {
+    socket.emit('update-team-name', { teamIndex, newName });
+}
+
 function renderAudienceView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
@@ -59,11 +72,11 @@ function renderAudienceView(gameState) {
             `).join('')}
         </ul>
         <h3>Team Scores</h3>
-        <p>Team 1: ${gameState.teamScores[0]}</p>
-        <p>Team 2: ${gameState.teamScores[1]}</p>
+        <p>${gameState.teamNames[0]}: ${gameState.teamScores[0]}</p>
+        <p>${gameState.teamNames[1]}: ${gameState.teamScores[1]}</p>
         <h3>Wrong Answers</h3>
-        <p>Team 1: ${gameState.wrongAnswers[0]}</p>
-        <p>Team 2: ${gameState.wrongAnswers[1]}</p>
+        <p>${gameState.teamNames[0]}: ${gameState.wrongAnswers[0]}</p>
+        <p>${gameState.teamNames[1]}: ${gameState.wrongAnswers[1]}</p>
     `;
 }
 

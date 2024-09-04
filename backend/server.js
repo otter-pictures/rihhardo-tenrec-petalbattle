@@ -14,7 +14,8 @@ let gameState = {
     questions: [],
     revealedAnswers: [],
     teamScores: [0, 0],
-    wrongAnswers: [0, 0]
+    wrongAnswers: [0, 0],
+    teamNames: ['Team 1', 'Team 2']  // Add default team names
 };
 
 // Load questions from CSV
@@ -54,6 +55,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 io.on('connection', (socket) => {
     console.log('New client connected');
     socket.emit('game-update', gameState);
+
+    // Host updates team names
+    socket.on('update-team-name', (data) => {
+        const { teamIndex, newName } = data;
+        gameState.teamNames[teamIndex] = newName;  // Update the team name
+        io.emit('game-update', gameState);  // Broadcast the updated game state to all clients
+    });
 
     // Host reveals an answer
     socket.on('reveal-answer', (data) => {
