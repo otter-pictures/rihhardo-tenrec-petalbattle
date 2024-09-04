@@ -1,6 +1,9 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 button {
@@ -17,8 +20,85 @@ ul {
     list-style: none;
 }
 
-#host-interface, #audience-interface {
+.audience-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #f4f4f9;
+}
+
+.team-left, .team-right {
+    width: 20%;
+    text-align: center;
+    padding: 10px;
+}
+
+.question-center {
+    width: 50%;
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+}
+
+.answer-table {
     margin: 20px auto;
-    max-width: 600px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.answer-table td {
+    padding: 20px;
+    border: 2px solid #ccc;
+    text-align: center;
+    font-size: 18px;
+    width: 50%; /* Ensure all cells take up equal width */
+    height: 88px; /* Set a fixed height to prevent resizing */
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.answer-table td:hover {
+    background-color: #e0e0e0;
+}
+
+.team-left h3, .team-right h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.team-left p, .team-right p {
+    font-size: 20px;
+    color: #333;
+}
+
+.question-center h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.question-center h3 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+.team-left p, .team-right p {
+    font-size: 24px;
+    margin-top: 10px;
+}
+
+.team-left p:last-child, .team-right p:last-child {
+    font-size: 28px;
+    color: red;
+    margin-top: 5px;
+}
+
+#host-interface, #audience-interface {
+    margin: 64px auto;
+    max-width: full;
     text-align: left;
 }
