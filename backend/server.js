@@ -53,7 +53,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Socket.io connection handler
 io.on('connection', (socket) => {
-    console.log('New client connected');
+    console.log('New client connected with ID:', socket.id);
+    
+    // Send the initial game state to the newly connected client
     socket.emit('game-update', gameState);
 
     // Host updates team names

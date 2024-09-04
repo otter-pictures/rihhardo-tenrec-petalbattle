@@ -1,11 +1,17 @@
+let gameState = {};  // Global variable to store the game state
+
 const socket = io();
 
-// DOM elements for Host and Audience view
-const hostInterface = document.getElementById('host-interface');
-const audienceInterface = document.getElementById('audience-interface');
+socket.on('connect', () => {
+    console.log('Connected to the server with Socket.io');
+});
 
 // Handle game state updates from the server
-socket.on('game-update', (gameState) => {
+socket.on('game-update', (updatedGameState) => {
+    gameState = updatedGameState;  // Update the global game state
+    console.log('Game update received:', gameState);
+
+    // Render the game state for the host or audience
     if (hostInterface) {
         renderHostView(gameState);
     }
@@ -13,6 +19,10 @@ socket.on('game-update', (gameState) => {
         renderAudienceView(gameState);
     }
 });
+
+// DOM elements for Host and Audience view
+const hostInterface = document.getElementById('host-interface');
+const audienceInterface = document.getElementById('audience-interface');
 
 // Render Host Interface - Host can edit team names
 function renderHostView(gameState) {
@@ -86,8 +96,21 @@ function revealAnswer(questionIndex, answerIndex) {
 }
 
 function assignPoints(teamIndex) {
+    if (!gameState || !gameState.questions) {
+        console.error("Game state is not yet available.");
+        return;  // Exit if gameState is not available
+    }
+
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
-    const points = currentQuestion.answers.reduce((sum, answer) => answer.revealed ? sum + answer.points : sum, 0);
+
+    // Calculate the total points for revealed answers
+    const points = currentQuestion.answers.reduce((sum, answer) => {
+        return answer.revealed ? sum + answer.points : sum;
+    }, 0);
+
+    console.log(`Assigning ${points} points to Team ${teamIndex + 1}`);
+
+    // Emit the event to assign points to the team
     socket.emit('assign-points', { teamIndex, points });
 }
 
