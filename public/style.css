@@ -20,14 +20,15 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100vh;
-    padding: 20px;
+    max-height: 100vh;
+    padding: 24px;
     background-color: #f0f0f0;
 }
 
 .question-header h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
+    font-size: 48px;
+    padding-top: 64px;
+    padding-bottom: 64px;
     text-align: center;
 }
 
@@ -35,12 +36,11 @@ body {
 .row {
     display: flex;
     justify-content: space-between;
-    width: 80%;
-    margin: 10px 0;
+    width: 100%;
 }
 
 .column-left, .column-right {
-    width: 48%;
+    width: 50%;
     text-align: center;
     background-color: #333333;
     padding: 20px;
@@ -62,9 +62,10 @@ body {
     font-size: 28px;
     background-color: #333333;
     padding: 10px;
-    width: 48%; /* Same width as columns */
+    width: 25%; /* Same width as columns */
     text-align: center;
     border: 2px solid white;
+    margin-bottom: 64px;
     color: white;
 }
 
@@ -74,7 +75,7 @@ body {
 }
 
 .team-name {
-    width: 48%;
+    width: 50%;
     font-size: 24px;
     text-align: center;
     padding: 10px;
@@ -96,9 +97,19 @@ body {
     justify-content: space-between;
 }
 
-.team-score {
-    width: 12%; /* Smaller width for scores */
-    text-align: center;
+.team-score-left {
+    width: 24%; /* Smaller width for scores */
+    text-align: left;
+    font-size: 20px;
+    background-color: #333333;
+    padding: 10px;
+    border: 2px solid white;
+    color: white;
+}
+
+.team-score-right {
+    width: 24%; /* Smaller width for scores */
+    text-align: right;
     font-size: 20px;
     background-color: #333333;
     padding: 10px;

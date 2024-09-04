@@ -70,25 +70,25 @@ function renderAudienceView(gameState) {
 
             <!-- Row 4: Revealed answers score -->
             <div class="row score-row">
-                <div class="score">Total Revealed Points: ${totalRevealedPoints}</div>
+                <div class="score">${totalRevealedPoints}</div>
             </div>
 
             <!-- Row 5: Team names -->
             <div class="row team-row">
-                <div class="team-name left-align">Team 1: ${gameState.teamNames[0]}</div>
-                <div class="team-name right-align">Team 2: ${gameState.teamNames[1]}</div>
+                <div class="team-name left-align">${gameState.teamNames[0]}</div>
+                <div class="team-name right-align">${gameState.teamNames[1]}</div>
             </div>
 
             <!-- Row 6: Team scores and wrong answers -->
             <div class="row scores-and-wrong-answers">
-                <div class="team-score left-align">Score: ${gameState.teamScores[0]}</div>
+                <div class="team-score-left left-align"> ${gameState.teamScores[0]}</div>
                 <div class="square">${gameState.wrongAnswers[0] >= 1 ? '❌' : ''}</div>
                 <div class="square">${gameState.wrongAnswers[0] >= 2 ? '❌' : ''}</div>
                 <div class="square">${gameState.wrongAnswers[0] >= 3 ? '❌' : ''}</div>
                 <div class="square">${gameState.wrongAnswers[1] >= 3 ? '❌' : ''}</div>
                 <div class="square">${gameState.wrongAnswers[1] >= 2 ? '❌' : ''}</div>
                 <div class="square">${gameState.wrongAnswers[1] >= 1 ? '❌' : ''}</div>
-                <div class="team-score right-align">Score: ${gameState.teamScores[1]}</div>
+                <div class="team-score-right right-align"> ${gameState.teamScores[1]}</div>
             </div>
         </div>
     `;
