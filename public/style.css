@@ -1,148 +1,119 @@
+/* Apply consistent box-sizing */
 *,
 *::before,
 *::after {
     box-sizing: border-box;
 }
 
-/* Global Styles */
 body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background-color: #f9fafb;
-    color: #333;
-    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333333;
 }
 
-button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-h1 {
-    margin-top: 20px;
-    font-size: 36px;
-    font-weight: bold;
-    color: #333;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-/* Layout for Audience and Host Container */
-.audience-container, .host-container {
+.audience-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     width: 100%;
-    min-height: 100vh;
-    padding: 40px;
-    box-sizing: border-box;
-}
-
-/* Team containers */
-.team-left, .team-right {
-    width: 22%;
-    text-align: center;
+    height: 100vh;
     padding: 20px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f0f0f0;
 }
 
-.team-left h3, .team-right h3 {
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: 16px;
-    color: #2c3e50;
-}
-
-.team-left p, .team-right p {
-    font-size: 22px;
-    color: #34495e;
-}
-
-/* Middle Question and Answer Container */
-.question-center {
-    width: 50%;
-    text-align: center;
-    padding: 40px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.question-center h2 {
-    font-size: 34px;
-    font-weight: bold;
-    color: #2c3e50;
+.question-header h2 {
+    font-size: 28px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
-.question-center h3 {
+/* General row styling */
+.row {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: 10px 0;
+}
+
+.column-left, .column-right {
+    width: 48%;
+    text-align: center;
+    background-color: #333333;
+    padding: 20px;
+    border: 2px solid white;
     font-size: 24px;
-    font-weight: normal;
-    color: #7f8c8d;
-    margin-bottom: 20px;
+    color: white;
 }
 
-/* Answer Table */
-.answer-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
+.column-left.revealed, .column-right.revealed {
+    background-color: #28a745;
 }
 
-.answer-table td {
-    padding: 20px;
-    border: 1px solid #e0e0e0;
+/* Row 4: Score */
+.score-row {
+    justify-content: center;
+}
+
+.score {
+    font-size: 28px;
+    background-color: #333333;
+    padding: 10px;
+    width: 48%; /* Same width as columns */
+    text-align: center;
+    border: 2px solid white;
+    color: white;
+}
+
+/* Row 5: Team names */
+.team-row {
+    justify-content: space-between;
+}
+
+.team-name {
+    width: 48%;
+    font-size: 24px;
+    text-align: center;
+    padding: 10px;
+    background-color: #333333;
+    border: 2px solid white;
+    color: white;
+}
+
+.left-align {
+    text-align: left;
+}
+
+.right-align {
+    text-align: right;
+}
+
+/* Row 6: Team scores and wrong answers */
+.scores-and-wrong-answers {
+    justify-content: space-between;
+}
+
+.team-score {
+    width: 12%; /* Smaller width for scores */
     text-align: center;
     font-size: 20px;
-    color: #333;
-    height: 88px; /* Set fixed height to prevent resizing */
-    transition: background-color 0.3s ease;
+    background-color: #333333;
+    padding: 10px;
+    border: 2px solid white;
+    color: white;
 }
 
-.answer-table td.revealed {
-    background-color: #ecf0f1;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.answer-table td.unrevealed {
-    background-color: #f9f9f9;
-}
-
-.answer-table td:hover {
-    background-color: #e0e0e0;
-}
-
-/* Wrong Answers Display */
-.team-left p:last-child, .team-right p:last-child {
-    font-size: 28px;
-    color: #e74c3c;
-    margin-top: 10px;
-    letter-spacing: 5px;
-}
-
-/* Host and Audience Interfaces */
-#host-interface, #audience-interface {
-    padding: 20px;
-    max-width: 100%;
-    text-align: left;
-    background-color: #f9fafb;
+.square {
+    width: 50px;
+    height: 50px;
+    background-color: #333333;
+    border: 2px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    color: #dc3545; /* Red for wrong answers */
 }

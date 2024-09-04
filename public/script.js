@@ -37,36 +37,58 @@ function renderAudienceView(gameState) {
 
     audienceInterface.innerHTML = `
         <div class="audience-container">
-            <div class="team-left">
-                <h3>${gameState.teamNames[0]}</h3>
-                <p>Score: ${gameState.teamScores[0]}</p>
-                <p>${wrongAnswersDisplay(gameState.wrongAnswers[0])}</p>
-            </div>
-
-            <div class="question-center">
+            <!-- Display the current question -->
+            <div class="question-header">
                 <h2>${currentQuestion.question}</h2>
-                <h3>Total Revealed Points: ${totalRevealedPoints}</h3>
-                
-                <table class="answer-table">
-                    <tr>
-                        <td>${currentQuestion.answers[0] ? (currentQuestion.answers[0].revealed ? `${currentQuestion.answers[0].answer} (${currentQuestion.answers[0].points})` : '???') : ''}</td>
-                        <td>${currentQuestion.answers[3] ? (currentQuestion.answers[3].revealed ? `${currentQuestion.answers[3].answer} (${currentQuestion.answers[3].points})` : '???') : ''}</td>
-                    </tr>
-                    <tr>
-                        <td>${currentQuestion.answers[1] ? (currentQuestion.answers[1].revealed ? `${currentQuestion.answers[1].answer} (${currentQuestion.answers[1].points})` : '???') : ''}</td>
-                        <td>${currentQuestion.answers[4] ? (currentQuestion.answers[4].revealed ? `${currentQuestion.answers[4].answer} (${currentQuestion.answers[4].points})` : '???') : ''}</td>
-                    </tr>
-                    <tr>
-                        <td>${currentQuestion.answers[2] ? (currentQuestion.answers[2].revealed ? `${currentQuestion.answers[2].answer} (${currentQuestion.answers[2].points})` : '???') : ''}</td>
-                        <td>${currentQuestion.answers[5] ? (currentQuestion.answers[5].revealed ? `${currentQuestion.answers[5].answer} (${currentQuestion.answers[5].points})` : '???') : ''}</td>
-                    </tr>
-                </table>
             </div>
 
-            <div class="team-right">
-                <h3>${gameState.teamNames[1]}</h3>
-                <p>Score: ${gameState.teamScores[1]}</p>
-                <p>${wrongAnswersDisplay(gameState.wrongAnswers[1])}</p>
+            <!-- First three rows for answers (1-3 on the left, 4-6 on the right) -->
+            <div class="row">
+                <div class="column-left ${currentQuestion.answers[0] && currentQuestion.answers[0].revealed ? 'revealed' : ''}">
+                    ${currentQuestion.answers[0] ? (currentQuestion.answers[0].revealed ? `${currentQuestion.answers[0].answer} (${currentQuestion.answers[0].points})` : '???') : ''}
+                </div>
+                <div class="column-right ${currentQuestion.answers[3] && currentQuestion.answers[3].revealed ? 'revealed' : ''}">
+                    ${currentQuestion.answers[3] ? (currentQuestion.answers[3].revealed ? `${currentQuestion.answers[3].answer} (${currentQuestion.answers[3].points})` : '???') : ''}
+                </div>
+            </div>
+            <div class="row">
+                <div class="column-left ${currentQuestion.answers[1] && currentQuestion.answers[1].revealed ? 'revealed' : ''}">
+                    ${currentQuestion.answers[1] ? (currentQuestion.answers[1].revealed ? `${currentQuestion.answers[1].answer} (${currentQuestion.answers[1].points})` : '???') : ''}
+                </div>
+                <div class="column-right ${currentQuestion.answers[4] && currentQuestion.answers[4].revealed ? 'revealed' : ''}">
+                    ${currentQuestion.answers[4] ? (currentQuestion.answers[4].revealed ? `${currentQuestion.answers[4].answer} (${currentQuestion.answers[4].points})` : '???') : ''}
+                </div>
+            </div>
+            <div class="row">
+                <div class="column-left ${currentQuestion.answers[2] && currentQuestion.answers[2].revealed ? 'revealed' : ''}">
+                    ${currentQuestion.answers[2] ? (currentQuestion.answers[2].revealed ? `${currentQuestion.answers[2].answer} (${currentQuestion.answers[2].points})` : '???') : ''}
+                </div>
+                <div class="column-right ${currentQuestion.answers[5] && currentQuestion.answers[5].revealed ? 'revealed' : ''}">
+                    ${currentQuestion.answers[5] ? (currentQuestion.answers[5].revealed ? `${currentQuestion.answers[5].answer} (${currentQuestion.answers[5].points})` : '???') : ''}
+                </div>
+            </div>
+
+            <!-- Row 4: Revealed answers score -->
+            <div class="row score-row">
+                <div class="score">Total Revealed Points: ${totalRevealedPoints}</div>
+            </div>
+
+            <!-- Row 5: Team names -->
+            <div class="row team-row">
+                <div class="team-name left-align">Team 1: ${gameState.teamNames[0]}</div>
+                <div class="team-name right-align">Team 2: ${gameState.teamNames[1]}</div>
+            </div>
+
+            <!-- Row 6: Team scores and wrong answers -->
+            <div class="row scores-and-wrong-answers">
+                <div class="team-score left-align">Score: ${gameState.teamScores[0]}</div>
+                <div class="square">${gameState.wrongAnswers[0] >= 1 ? '❌' : ''}</div>
+                <div class="square">${gameState.wrongAnswers[0] >= 2 ? '❌' : ''}</div>
+                <div class="square">${gameState.wrongAnswers[0] >= 3 ? '❌' : ''}</div>
+                <div class="square">${gameState.wrongAnswers[1] >= 3 ? '❌' : ''}</div>
+                <div class="square">${gameState.wrongAnswers[1] >= 2 ? '❌' : ''}</div>
+                <div class="square">${gameState.wrongAnswers[1] >= 1 ? '❌' : ''}</div>
+                <div class="team-score right-align">Score: ${gameState.teamScores[1]}</div>
             </div>
         </div>
     `;
