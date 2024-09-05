@@ -31,48 +31,51 @@ function renderAudienceView(gameState) {
     const wrongAnswersDisplay = '❌'.repeat(gameState.wrongAnswers);
 
     audienceInterface.innerHTML = 
-        `<div class="audience-container">
-            <!-- Display the current question -->
-            <div class="question-header">
+        `<div class="audience-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+            <!-- Display the current question with fixed height -->
+            <div class="question-header" style="height: 192px; overflow: hidden; text-overflow: ellipsis; text-align: center;">
                 <h2>${currentQuestion.question}</h2>
             </div>
 
-            <!-- Rows for answers: Left column (1-4), Right column (5-8) -->
-            <div class="row">
-                ${renderAnswerCell(currentQuestion.answers[0], 1)}
-                ${renderAnswerCell(currentQuestion.answers[4], 5)}
-            </div>
-
-            <div class="row">
-                ${renderAnswerCell(currentQuestion.answers[1], 2)}
-                ${renderAnswerCell(currentQuestion.answers[5], 6)}
-            </div>
-
-            <div class="row">
-                ${renderAnswerCell(currentQuestion.answers[2], 3)}
-                ${renderAnswerCell(currentQuestion.answers[6], 7)}
-            </div>
-
-            <div class="row">
-                ${renderAnswerCell(currentQuestion.answers[3], 4)}
-                ${renderAnswerCell(currentQuestion.answers[7], 8)}
-            </div>
-
-            <!-- Row: Team names -->
-            <div class="row team-row">
-                <div class="team-name left-align">${gameState.teamNames[0]}</div>
-                <div class="team-name right-align">${gameState.teamNames[1]}</div>
-            </div>
-
-            <!-- Row: Team scores and wrong answers centered between them -->
-            <div class="row scores-and-wrong-answers">
-                <div class="team-score-left left-align" style="flex: 1;">${gameState.teamScores[0]}</div>
-                <div class="wrong-answers" style="display: flex; justify-content: center; align-items: center;">
-                    <div class="square">${gameState.wrongAnswers >= 1 ? '❌' : ''}</div>
-                    <div class="square">${gameState.wrongAnswers >= 2 ? '❌' : ''}</div>
-                    <div class="square">${gameState.wrongAnswers >= 3 ? '❌' : ''}</div>
+            <!-- Wrap the gameboard in a flex container to center it -->
+            <div class="gameboard" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+                <!-- Rows for answers: Left column (1-4), Right column (5-8) -->
+                <div class="row">
+                    ${renderAnswerCell(currentQuestion.answers[0], 1)}
+                    ${renderAnswerCell(currentQuestion.answers[4], 5)}
                 </div>
-                <div class="team-score-right right-align" style="flex: 1;">${gameState.teamScores[1]}</div>
+
+                <div class="row">
+                    ${renderAnswerCell(currentQuestion.answers[1], 2)}
+                    ${renderAnswerCell(currentQuestion.answers[5], 6)}
+                </div>
+
+                <div class="row">
+                    ${renderAnswerCell(currentQuestion.answers[2], 3)}
+                    ${renderAnswerCell(currentQuestion.answers[6], 7)}
+                </div>
+
+                <div class="row">
+                    ${renderAnswerCell(currentQuestion.answers[3], 4)}
+                    ${renderAnswerCell(currentQuestion.answers[7], 8)}
+                </div>
+
+                <!-- Row: Team names -->
+                <div class="row team-row">
+                    <div class="team-name left-align">${gameState.teamNames[0]}</div>
+                    <div class="team-name right-align">${gameState.teamNames[1]}</div>
+                </div>
+
+                <!-- Row: Team scores and wrong answers centered between them -->
+                <div class="row scores-and-wrong-answers">
+                    <div class="team-score-left left-align" style="flex: 1;">${gameState.teamScores[0]}</div>
+                    <div class="wrong-answers" style="display: flex; justify-content: center; align-items: center;">
+                        <div class="square">${gameState.wrongAnswers >= 1 ? '❌' : ''}</div>
+                        <div class="square">${gameState.wrongAnswers >= 2 ? '❌' : ''}</div>
+                        <div class="square">${gameState.wrongAnswers >= 3 ? '❌' : ''}</div>
+                    </div>
+                    <div class="team-score-right right-align" style="flex: 1;">${gameState.teamScores[1]}</div>
+                </div>
             </div>
         </div>`;
 }
