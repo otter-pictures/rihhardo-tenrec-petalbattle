@@ -3,10 +3,11 @@
   --main-bg-color: #001E8B;
   --cell-bg-color: #060B1C;
   --text-color: #ffffff;
-  --revealed-color: #3265ca;
+  --revealed-color: #4669E7;
+  --revealed-text-color: #ffffff;
   --strike-color: #dc3545;
   --sequence-bg-color: #88bbe9;
-  --cell-padding: 1.5vh 2vh;
+  --cell-padding: 1.25vh 2.5vh;
   --cell-font-size: 6vh;
   --gap: 1vh;
   --shadow-size: 0.2vh;
@@ -84,12 +85,24 @@ body {
     color: white;
     border-radius: 10px;
     box-shadow: 
-        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(255, 255, 255, 0.4),
+        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(69, 99, 208, 0.8),
         inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
 }
 
-.answer-cell.revealed { background-color: var(--revealed-color); }
+.answer-cell.revealed { 
+    background-color: var(--revealed-color); 
+    color: var(--revealed-text-color);
+    box-shadow: 
+        inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(255, 255, 255, 0.3),
+        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(6, 11, 28, 1);
+}
 
+/* Add this new class for unrevealed answer cells */
+.answer-cell.unrevealed {
+    justify-content: center;
+}
+
+/* Update the .sequence style */
 .sequence {
     background-color: var(--sequence-bg-color);
     border-radius: 50%;
@@ -98,8 +111,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 1.5vh;
     font-size: 3.5vh;
+    /* Remove the margin-right for unrevealed cells */
+    margin-right: 0;
+}
+
+/* Add this style to hide text and points in unrevealed cells */
+.answer-cell.unrevealed .text,
+.answer-cell.unrevealed .points {
+    display: none;
+}
+
+/* Adjust the revealed cell to add back the margin */
+.answer-cell.revealed .sequence {
+    margin-right: 1.5vh;
 }
 
 .text {
@@ -147,10 +172,9 @@ body {
     color: var(--strike-color);
     border-radius: 10px;
     box-shadow: 
-        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(255, 255, 255, 0.4),
+        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(69, 99, 208, 0.8),
         inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
 }
-
 .question-header,
 .cell,
 .sequence,
@@ -161,3 +185,4 @@ body {
 .strike {
     text-transform: uppercase;
 }
+

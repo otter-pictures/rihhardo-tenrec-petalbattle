@@ -72,13 +72,14 @@ function renderAnswerCell(answer, sequenceNumber) {
         return `<div class="cell answer-cell empty"></div>`;
     }
 
-    const cellClass = answer.revealed ? "revealed" : "";
-    const answerText = answer.revealed ? answer.answer : '???';
+    const cellClass = answer.revealed ? "revealed" : "unrevealed";
+    const answerText = answer.revealed ? answer.answer : '';
     const pointsText = answer.revealed ? `${answer.points}` : '';
+    const sequenceSpan = answer.revealed ? '' : `<span class="sequence">${sequenceNumber}</span>`;
 
     return `
         <div class="cell answer-cell ${cellClass}">
-            <span class="sequence">${sequenceNumber}</span>
+            ${sequenceSpan}
             <span class="text">${answerText}</span>
             <span class="points">${pointsText}</span>
         </div>
