@@ -6,7 +6,8 @@
   --revealed-color: #4669E7;
   --revealed-text-color: #ffffff;
   --strike-color: #dc3545;
-  --sequence-bg-color: #88bbe9;
+  --sequence-bg-color: #FFFFFF;
+  --sequence-text-color: #001E8B;
   --cell-padding: 1.25vh 2.5vh;
   --cell-font-size: 6vh;
   --gap: 1vh;
@@ -67,6 +68,10 @@ body {
     width: 100%;
 }
 
+.small-gap {
+    margin: 2vh 0;
+}
+
 .row {
     display: flex;
     justify-content: space-between;
@@ -105,6 +110,7 @@ body {
 /* Update the .sequence style */
 .sequence {
     background-color: var(--sequence-bg-color);
+    color: var(--sequence-text-color);
     border-radius: 50%;
     width: 7vh;
     height: 7vh;
@@ -112,7 +118,6 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 3.5vh;
-    /* Remove the margin-right for unrevealed cells */
     margin-right: 0;
 }
 
@@ -135,7 +140,6 @@ body {
 
 .points {
     font-weight: 400;
-    font-size: 5vh;
 }
 
 /* Team names and scores */

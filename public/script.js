@@ -49,6 +49,7 @@ function renderAudienceView(gameState) {
                     ${renderAnswerCell(currentQuestion.answers[3], 4)}
                     ${renderAnswerCell(currentQuestion.answers[7], 8)}
                 </div>
+                 <div class="small-gap"></div>               
                 <div class="row team-names">
                     <div class="cell team-name-left">${gameState.teamNames[0]}</div>
                     <div class="cell team-name-right">${gameState.teamNames[1]}</div>
