@@ -1,44 +1,60 @@
 /* General styles */
 :root {
-  --main-bg-color: #f0f0f0;
-  --cell-bg-color: #333;
-  --text-color: #333;
+  --main-bg-color: #001E8B;
+  --cell-bg-color: #060B1C;
+  --text-color: #ffffff;
   --revealed-color: #3265ca;
   --strike-color: #dc3545;
   --sequence-bg-color: #88bbe9;
-  --cell-padding: 2vh 3vh;
-  --cell-font-size: 5vh;
+  --cell-padding: 1.5vh 2vh;
+  --cell-font-size: 6vh;
   --gap: 1vh;
+  --shadow-size: 0.2vh;
 }
 
 * { box-sizing: border-box; }
+
+body,
+.question-header,
+.cell,
+.answer-cell,
+.sequence,
+.text,
+.points,
+.team-name,
+.team-score,
+.strike {
+  font-family: "Inter", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
 
 body {
     margin: 0;
     padding: 0;
     background-color: var(--main-bg-color);
     color: var(--text-color);
-    font-family: "League Gothic", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
+    position: relative;
+    overflow: hidden;
 }
 
 /* Layout */
 .audience-container {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto 1fr auto;
     height: 90vh;
     width: 80vw;
     max-width: 1920px;
     margin: 0 auto;
+    gap: 2vh;
+    background-color: var(--main-bg-color);
 }
 
 .question-header {
     align-self: end;
     text-align: center;
-    font-size: clamp(16px, 3vw, 48px);
+    font-size: clamp(18px, 3.5vw, 54px);
     line-height: 1.2;
 }
 
@@ -66,6 +82,10 @@ body {
     padding: var(--cell-padding);
     font-size: var(--cell-font-size);
     color: white;
+    border-radius: 10px;
+    box-shadow: 
+        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(255, 255, 255, 0.4),
+        inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
 }
 
 .answer-cell.revealed { background-color: var(--revealed-color); }
@@ -73,30 +93,30 @@ body {
 .sequence {
     background-color: var(--sequence-bg-color);
     border-radius: 50%;
-    width: 6vh;
-    height: 6vh;
+    width: 7vh;
+    height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 2vh;
-    font-weight: bold;
-    font-size: 3vh;
+    margin-right: 1.5vh;
+    font-size: 3.5vh;
 }
 
 .text {
     flex-grow: 1;
     text-align: left;
-    padding-right: 16px;
+    padding-right: 1vh;
 }
 
 .points {
-    font-weight: bold;
+    font-weight: 400;
+    font-size: 5vh;
 }
 
 /* Team names and scores */
 .team-name, .team-score { 
-    /* existing styles */
-    display: flex; /* Add this line */
+    display: flex;
+    font-size: 4vh;
 }
 
 .team-name-left, .team-score-left { 
@@ -105,7 +125,7 @@ body {
 
 .team-name-right, .team-score-right { 
     text-align: right;
-    justify-content: flex-end; /* Add this line */
+    justify-content: flex-end;
 }
 
 /* Strikes */
@@ -117,14 +137,18 @@ body {
 }
 
 .strike {
-    width: 10vh;
-    height: 10vh;
+    width: 11vh;
+    height: 11vh;
     background-color: var(--cell-bg-color);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: var(--cell-font-size);
+    font-size: 7vh;
     color: var(--strike-color);
+    border-radius: 10px;
+    box-shadow: 
+        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(255, 255, 255, 0.4),
+        inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
 }
 
 .question-header,
@@ -136,12 +160,4 @@ body {
 .team-score,
 .strike {
     text-transform: uppercase;
-}
-
-.league-gothic-ff {
-  font-family: "League Gothic", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-  font-variation-settings: "wdth" 100;
 }
