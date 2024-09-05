@@ -18,29 +18,28 @@ body {
     padding: 0;
     background-color: var(--main-bg-color);
     color: var(--text-color);
-    font-family: "Roboto Condensed", sans-serif;
-    font-weight: 500;
+    font-family: "League Gothic", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
     font-style: normal;
-    letter-spacing: -0.1em;
+    font-variation-settings: "wdth" 100;
 }
 
 /* Layout */
 .audience-container {
     display: grid;
     grid-template-rows: auto 1fr;
-    height: 100vh;
+    height: 90vh;
     width: 80vw;
     max-width: 1920px;
     margin: 0 auto;
-    padding: 1vh 1vw;
 }
 
 .question-header {
     align-self: end;
     text-align: center;
-    font-size: clamp(16px, 4vw, 48px);
+    font-size: clamp(16px, 3vw, 48px);
     line-height: 1.2;
-    padding: 2vh 0;
 }
 
 .gameboard {
@@ -118,8 +117,8 @@ body {
 }
 
 .strike {
-    width: 8vh;
-    height: 8vh;
+    width: 10vh;
+    height: 10vh;
     background-color: var(--cell-bg-color);
     display: flex;
     justify-content: center;
@@ -137,4 +136,12 @@ body {
 .team-score,
 .strike {
     text-transform: uppercase;
+}
+
+.league-gothic-ff {
+  font-family: "League Gothic", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }
