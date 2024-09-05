@@ -92,6 +92,8 @@ body {
     box-shadow: 
         inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(69, 99, 208, 0.8),
         inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
+    height: 10vh; /* Set a fixed height for all cells */
+    min-height: 10vh; /* Ensure minimum height */
 }
 
 .answer-cell.revealed { 
@@ -117,7 +119,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 3.5vh;
+    font-size: var(--cell-font-size);
     margin-right: 0;
 }
 
@@ -166,8 +168,8 @@ body {
 }
 
 .strike {
-    width: 11vh;
-    height: 11vh;
+    width: 10vh;
+    height: 10vh;
     background-color: var(--cell-bg-color);
     display: flex;
     justify-content: center;
