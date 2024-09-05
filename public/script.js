@@ -91,54 +91,74 @@ function renderAnswerCell(answer, sequenceNumber) {
 function renderHostView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
-    hostInterface.innerHTML = 
-        `<h2>Current Question: ${currentQuestion.question}</h2>
-        <ul>
-            ${currentQuestion.answers.map((answer, index) => 
-                `<li>${answer.answer} (${answer.points} points)
-                <button onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
-                        ${answer.revealed ? 'disabled' : ''}>
-                    ${answer.revealed ? 'Revealed' : 'Reveal'}
-                </button>
-                </li>`
-            ).join('')}
-        </ul>
-        <div>
-            <button onclick="prevQuestion()">Previous Question</button>
-            <button onclick="nextQuestion()">Next Question</button>
-        </div>
-        <h3>Edit Team Names</h3>
-        <div>
-            <label>Team 1 Name: </label>
-            <input type="text" value="${gameState.teamNames[0]}" onchange="updateTeamName(0, this.value)" />
-        </div>
-        <div>
-            <label>Team 2 Name: </label>
-            <input type="text" value="${gameState.teamNames[1]}" onchange="updateTeamName(1, this.value)" />
-        </div>
-        
-        <h3>Assign Revealed Points</h3>
-        <div>
-            <button onclick="assignRevealedPoints(0)">Assign to ${gameState.teamNames[0]}</button>
-            <button onclick="assignRevealedPoints(1)">Assign to ${gameState.teamNames[1]}</button>
-        </div>
+    hostInterface.innerHTML = `
+        <div class="host-container">
+            <div class="section question-section">
+                <h2 class="section-title">Current Question</h2>
+                <div class="content-box">
+                    <p class="question-text">${currentQuestion.question}</p>
+                    <div class="button-group">
+                        <button class="btn secondary" onclick="prevQuestion()">Previous</button>
+                        <button class="btn secondary" onclick="nextQuestion()">Next</button>
+                    </div>
+                </div>
+            </div>
 
-        <h3>Manual Point Adjustment</h3>
-        <div>
-            <label>Team 1 Points:</label>
-            <input type="number" id="team1-points" value="${gameState.teamScores[0]}" min="0" />
-            <button onclick="setManualPoints(0)">Set Points</button>
-        </div>
-        <div>
-            <label>Team 2 Points:</label>
-            <input type="number" id="team2-points" value="${gameState.teamScores[1]}" min="0" />
-            <button onclick="setManualPoints(1)">Set Points</button>
-        </div>
+            <div class="section answers-section">
+                <h2 class="section-title">Answers</h2>
+                <ul class="answer-list content-box">
+                    ${currentQuestion.answers.map((answer, index) => `
+                        <li class="answer-item">
+                            <span class="answer-text">${answer.answer}</span>
+                            <span class="answer-points">${answer.points}</span>
+                            <button class="btn ${answer.revealed ? 'disabled' : 'primary'}" 
+                                    onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
+                                    ${answer.revealed ? 'disabled' : ''}>
+                                ${answer.revealed ? 'Revealed' : 'Reveal'}
+                            </button>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
 
-        <h3>Wrong Answers</h3>
-        <button onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 ? 'disabled' : ''}>
-            Mark Wrong Answer (${gameState.wrongAnswers}/3)
-        </button>
+            <div class="section team-controls">
+                <h2 class="section-title">Team Controls</h2>
+                <ul class="team-list content-box">
+                    ${[0, 1].map(teamIndex => `
+                        <li class="team-item">
+                            <div class="team-name-edit">
+                                <input type="text" class="input team-name-input" value="${gameState.teamNames[teamIndex]}" id="team${teamIndex+1}-name-input" />
+                                <button class="btn secondary" onclick="updateTeamName(${teamIndex}, document.getElementById('team${teamIndex+1}-name-input').value)">Update</button>
+                            </div>
+                            <div class="team-points">
+                                <input type="number" class="input points-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
+                                <button class="btn secondary" onclick="setManualPoints(${teamIndex})">Set Points</button>
+                            </div>
+                            <button class="btn ${gameState.assignedPoints[teamIndex] ? 'disabled' : 'primary'}" 
+                                    onclick="assignRevealedPoints(${teamIndex})"
+                                    ${gameState.assignedPoints[teamIndex] ? 'disabled' : ''}>
+                                ${gameState.assignedPoints[teamIndex] ? 'Assigned' : 'Assign Revealed'}
+                            </button>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+
+            <div class="section game-controls">
+                <h2 class="section-title">Game Controls</h2>
+                <div class="content-box">
+                    <div class="control-group">
+                        <label class="control-label">Wrong Answers:</label>
+                        <div class="button-group">
+                            <button class="btn ${gameState.wrongAnswers >= 3 ? 'disabled' : 'primary'}" 
+                                    onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 ? 'disabled' : ''}>
+                                Mark Wrong (${gameState.wrongAnswers}/3)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     `;
 }
 
@@ -197,4 +217,9 @@ function nextQuestion() {
 
 function prevQuestion() {
     socket.emit('change-question', { direction: 'prev' });
+}
+
+// Function to reset wrong answers
+function resetWrongAnswers() {
+    socket.emit('reset-wrong-answers');
 }
