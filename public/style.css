@@ -12,6 +12,7 @@
   --cell-font-size: 6vh;
   --gap: 1vh;
   --shadow-size: 0.2vh;
+  --stripe-color-1: rgba(70, 105, 231, 0.05);
 }
 
 * { box-sizing: border-box; }
@@ -30,6 +31,7 @@ body,
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
+  text-transform: uppercase;
 }
 
 body {
@@ -39,6 +41,25 @@ body {
     color: var(--text-color);
     position: relative;
     overflow: hidden;
+    background-image: 
+        linear-gradient(
+            0deg,
+            var(--main-bg-color) 0%,
+            var(--main-bg-color) 50%,
+            var(--stripe-color-1) 50%,
+            var(--stripe-color-1) 100%
+        );
+    background-size: 100% 8px;
+    animation: scrollStripes 1s linear infinite;
+}
+
+@keyframes scrollStripes {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 8px;
+    }
 }
 
 /* Layout */
@@ -50,7 +71,8 @@ body {
     max-width: 1920px;
     margin: 0 auto;
     gap: 2vh;
-    background-color: var(--main-bg-color);
+    position: relative;
+    z-index: 1;
 }
 
 .question-header {
@@ -92,8 +114,10 @@ body {
     box-shadow: 
         inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(69, 99, 208, 0.8),
         inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
-    height: 10vh; /* Set a fixed height for all cells */
-    min-height: 10vh; /* Ensure minimum height */
+    height: 10vh;
+    min-height: 10vh;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .answer-cell.revealed { 
@@ -104,12 +128,10 @@ body {
         inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(6, 11, 28, 1);
 }
 
-/* Add this new class for unrevealed answer cells */
 .answer-cell.unrevealed {
     justify-content: center;
 }
 
-/* Update the .sequence style */
 .sequence {
     background-color: var(--sequence-bg-color);
     color: var(--sequence-text-color);
@@ -120,16 +142,13 @@ body {
     justify-content: center;
     align-items: center;
     font-size: var(--cell-font-size);
-    margin-right: 0;
 }
 
-/* Add this style to hide text and points in unrevealed cells */
 .answer-cell.unrevealed .text,
 .answer-cell.unrevealed .points {
     display: none;
 }
 
-/* Adjust the revealed cell to add back the margin */
 .answer-cell.revealed .sequence {
     margin-right: 1.5vh;
 }
@@ -138,6 +157,8 @@ body {
     flex-grow: 1;
     text-align: left;
     padding-right: 1vh;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .points {
@@ -180,15 +201,5 @@ body {
     box-shadow: 
         inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(69, 99, 208, 0.8),
         inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
-}
-.question-header,
-.cell,
-.sequence,
-.text,
-.points,
-.team-name,
-.team-score,
-.strike {
-    text-transform: uppercase;
 }
 
