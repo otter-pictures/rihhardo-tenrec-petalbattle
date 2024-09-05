@@ -13,7 +13,7 @@ let gameState = {
     currentQuestionIndex: 0,
     questions: [],
     teamScores: [0, 0],
-    wrongAnswers: [0, 0],
+    wrongAnswers: 0,  // Global strike count
     teamNames: ['Team 1', 'Team 2']  // Default team names
 };
 
@@ -108,9 +108,14 @@ io.on('connection', (socket) => {
     });
 
     // Track wrong answers
-    socket.on('wrong-answer', (data) => {
-        const { teamIndex } = data;
-        gameState.wrongAnswers[teamIndex] += 1;
+    socket.on('wrong-answer', () => {
+        gameState.wrongAnswers += 1;  // Increment global strikes
+
+        // Check if the strikes hit the limit (3 wrong answers)
+        if (gameState.wrongAnswers >= 3) {
+            io.emit('strike-limit-reached', { message: '3 wrong answers reached!' });
+        }
+
         io.emit('game-update', gameState);
     });
 
@@ -123,8 +128,8 @@ io.on('connection', (socket) => {
             gameState.currentQuestionIndex -= 1;
         }
 
-        // Reset wrong answer counters when switching to a new question
-        gameState.wrongAnswers = [0, 0];  
+        // Reset wrong answers (strikes) for the new question
+        gameState.wrongAnswers = 0;  
 
         io.emit('game-update', gameState);  // Broadcast updated state
     });

@@ -27,88 +27,78 @@ const audienceInterface = document.getElementById('audience-interface');
 function renderAudienceView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
-    // Calculate the total points for revealed answers
-    const totalRevealedPoints = currentQuestion.answers.reduce((sum, answer) => {
-        return answer.revealed ? sum + answer.points : sum;
-    }, 0);
+    // Display red X's for wrong answers (based on global strikes)
+    const wrongAnswersDisplay = '❌'.repeat(gameState.wrongAnswers);
 
-    // Display red X's for wrong answers
-    const wrongAnswersDisplay = (count) => '❌'.repeat(count);
-
-    audienceInterface.innerHTML = `
-        <div class="audience-container">
+    audienceInterface.innerHTML = 
+        `<div class="audience-container">
             <!-- Display the current question -->
             <div class="question-header">
                 <h2>${currentQuestion.question}</h2>
             </div>
 
-            <!-- First three rows for answers (1-3 on the left, 4-6 on the right) -->
+            <!-- First three rows for answers -->
             <div class="row">
                 <div class="column-left ${currentQuestion.answers[0] && currentQuestion.answers[0].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[0] ? (currentQuestion.answers[0].revealed ? `${currentQuestion.answers[0].answer} (${currentQuestion.answers[0].points})` : '???') : ''}
+                    ${currentQuestion.answers[0] ? (currentQuestion.answers[0].revealed ? currentQuestion.answers[0].answer : '???') : ''}
                 </div>
                 <div class="column-right ${currentQuestion.answers[3] && currentQuestion.answers[3].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[3] ? (currentQuestion.answers[3].revealed ? `${currentQuestion.answers[3].answer} (${currentQuestion.answers[3].points})` : '???') : ''}
+                    ${currentQuestion.answers[3] ? (currentQuestion.answers[3].revealed ? currentQuestion.answers[3].answer : '???') : ''}
                 </div>
             </div>
+
             <div class="row">
                 <div class="column-left ${currentQuestion.answers[1] && currentQuestion.answers[1].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[1] ? (currentQuestion.answers[1].revealed ? `${currentQuestion.answers[1].answer} (${currentQuestion.answers[1].points})` : '???') : ''}
+                    ${currentQuestion.answers[1] ? (currentQuestion.answers[1].revealed ? currentQuestion.answers[1].answer : '???') : ''}
                 </div>
                 <div class="column-right ${currentQuestion.answers[4] && currentQuestion.answers[4].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[4] ? (currentQuestion.answers[4].revealed ? `${currentQuestion.answers[4].answer} (${currentQuestion.answers[4].points})` : '???') : ''}
+                    ${currentQuestion.answers[4] ? (currentQuestion.answers[4].revealed ? currentQuestion.answers[4].answer : '???') : ''}
                 </div>
             </div>
+
             <div class="row">
                 <div class="column-left ${currentQuestion.answers[2] && currentQuestion.answers[2].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[2] ? (currentQuestion.answers[2].revealed ? `${currentQuestion.answers[2].answer} (${currentQuestion.answers[2].points})` : '???') : ''}
+                    ${currentQuestion.answers[2] ? (currentQuestion.answers[2].revealed ? currentQuestion.answers[2].answer : '???') : ''}
                 </div>
                 <div class="column-right ${currentQuestion.answers[5] && currentQuestion.answers[5].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[5] ? (currentQuestion.answers[5].revealed ? `${currentQuestion.answers[5].answer} (${currentQuestion.answers[5].points})` : '???') : ''}
+                    ${currentQuestion.answers[5] ? (currentQuestion.answers[5].revealed ? currentQuestion.answers[5].answer : '???') : ''}
                 </div>
             </div>
 
-            <!-- Row 4: Revealed answers score -->
-            <div class="row score-row">
-                <div class="score">${totalRevealedPoints}</div>
-            </div>
-
-            <!-- Row 5: Team names -->
+            <!-- Row: Team names -->
             <div class="row team-row">
                 <div class="team-name left-align">${gameState.teamNames[0]}</div>
                 <div class="team-name right-align">${gameState.teamNames[1]}</div>
             </div>
 
-            <!-- Row 6: Team scores and wrong answers -->
+            <!-- Row: Team scores and wrong answers centered between them -->
             <div class="row scores-and-wrong-answers">
-                <div class="team-score-left left-align"> ${gameState.teamScores[0]}</div>
-                <div class="square">${gameState.wrongAnswers[0] >= 1 ? '❌' : ''}</div>
-                <div class="square">${gameState.wrongAnswers[0] >= 2 ? '❌' : ''}</div>
-                <div class="square">${gameState.wrongAnswers[0] >= 3 ? '❌' : ''}</div>
-                <div class="square">${gameState.wrongAnswers[1] >= 3 ? '❌' : ''}</div>
-                <div class="square">${gameState.wrongAnswers[1] >= 2 ? '❌' : ''}</div>
-                <div class="square">${gameState.wrongAnswers[1] >= 1 ? '❌' : ''}</div>
-                <div class="team-score-right right-align"> ${gameState.teamScores[1]}</div>
+                <div class="team-score-left left-align" style="flex: 1;">${gameState.teamScores[0]}</div>
+                <div class="wrong-answers" style="display: flex; justify-content: center; align-items: center;">
+                    <div class="square">${gameState.wrongAnswers >= 1 ? '❌' : ''}</div>
+                    <div class="square">${gameState.wrongAnswers >= 2 ? '❌' : ''}</div>
+                    <div class="square">${gameState.wrongAnswers >= 3 ? '❌' : ''}</div>
+                </div>
+                <div class="team-score-right right-align" style="flex: 1;">${gameState.teamScores[1]}</div>
             </div>
-        </div>
-    `;
+        </div>`;
 }
 
 // Render Host Interface
 function renderHostView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
-    hostInterface.innerHTML = `
-        <h2>Current Question: ${currentQuestion.question}</h2>
+    hostInterface.innerHTML = 
+        `<h2>Current Question: ${currentQuestion.question}</h2>
         <ul>
-            ${currentQuestion.answers.map((answer, index) => `
-                <li>${answer.answer} (${answer.points} points)
+            ${currentQuestion.answers.map((answer, index) => 
+                `<li>${answer.answer} (${answer.points} points)
                 <button onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
                         ${answer.revealed ? 'disabled' : ''}>
                     ${answer.revealed ? 'Revealed' : 'Reveal'}
                 </button>
-                </li>
-            `).join('')}
+                </li>`
+            ).join('')}
         </ul>
         <div>
             <button onclick="prevQuestion()">Previous Question</button>
@@ -143,8 +133,9 @@ function renderHostView(gameState) {
         </div>
 
         <h3>Wrong Answers</h3>
-        <button onclick="incrementWrongAnswer(0)">${gameState.teamNames[0]} Wrong Answer</button>
-        <button onclick="incrementWrongAnswer(1)">${gameState.teamNames[1]} Wrong Answer</button>
+        <button onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 ? 'disabled' : ''}>
+            Mark Wrong Answer (${gameState.wrongAnswers}/3)
+        </button>
     `;
 }
 
@@ -189,8 +180,11 @@ function revealAnswer(questionIndex, answerIndex) {
     socket.emit('reveal-answer', { questionIndex, answerIndex });
 }
 
-function incrementWrongAnswer(teamIndex) {
-    socket.emit('wrong-answer', { teamIndex });
+// Function to mark wrong answer, restricted to a max of 3 strikes
+function markWrongAnswer() {
+    if (gameState.wrongAnswers < 3) {
+        socket.emit('wrong-answer');
+    }
 }
 
 // Handle question navigation
