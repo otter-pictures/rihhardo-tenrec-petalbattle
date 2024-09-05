@@ -27,54 +27,40 @@ const audienceInterface = document.getElementById('audience-interface');
 function renderAudienceView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
-    // Display red X's for wrong answers (based on global strikes)
-    const wrongAnswersDisplay = '❌'.repeat(gameState.wrongAnswers);
-
-    audienceInterface.innerHTML = 
-        `<div class="audience-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
-            <!-- Display the current question with fixed height -->
-            <div class="question-header" style="height: 192px; overflow: hidden; text-overflow: ellipsis; text-align: center;">
+    audienceInterface.innerHTML = `
+        <div class="audience-container">
+            <div class="question-header">
                 <h2>${currentQuestion.question}</h2>
             </div>
-
-            <!-- Wrap the gameboard in a flex container to center it -->
-            <div class="gameboard" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
-                <!-- Rows for answers: Left column (1-4), Right column (5-8) -->
+            <div class="gameboard">
                 <div class="row">
                     ${renderAnswerCell(currentQuestion.answers[0], 1)}
                     ${renderAnswerCell(currentQuestion.answers[4], 5)}
                 </div>
-
                 <div class="row">
                     ${renderAnswerCell(currentQuestion.answers[1], 2)}
                     ${renderAnswerCell(currentQuestion.answers[5], 6)}
                 </div>
-
                 <div class="row">
                     ${renderAnswerCell(currentQuestion.answers[2], 3)}
                     ${renderAnswerCell(currentQuestion.answers[6], 7)}
                 </div>
-
                 <div class="row">
                     ${renderAnswerCell(currentQuestion.answers[3], 4)}
                     ${renderAnswerCell(currentQuestion.answers[7], 8)}
                 </div>
-
-                <!-- Row: Team names -->
-                <div class="row team-row">
-                    <div class="team-name left-align">${gameState.teamNames[0]}</div>
-                    <div class="team-name right-align">${gameState.teamNames[1]}</div>
+                <div class="row team-names">
+                    <div class="cell team-name-left">${gameState.teamNames[0]}</div>
+                    <div class="cell team-name-right">${gameState.teamNames[1]}</div>
                 </div>
-
-                <!-- Row: Team scores and wrong answers centered between them -->
-                <div class="row scores-and-wrong-answers">
-                    <div class="team-score-left left-align" style="flex: 1;">${gameState.teamScores[0]}</div>
-                    <div class="wrong-answers" style="display: flex; justify-content: center; align-items: center;">
-                        <div class="square">${gameState.wrongAnswers >= 1 ? '❌' : ''}</div>
-                        <div class="square">${gameState.wrongAnswers >= 2 ? '❌' : ''}</div>
-                        <div class="square">${gameState.wrongAnswers >= 3 ? '❌' : ''}</div>
+                <div class="row scores-strikes">
+                    <div class="cell team-score-left">${gameState.teamScores[0]}</div>
+                    <div class="strikes">
+                        <div class="strike">${gameState.wrongAnswers >= 1 ? '❌' : ''}</div>
+                        <div class="strike">${gameState.wrongAnswers >= 2 ? '❌' : ''}</div>
+                        <div class="strike">${gameState.wrongAnswers >= 3 ? '❌' : ''}</div>
                     </div>
-                    <div class="team-score-right right-align" style="flex: 1;">${gameState.teamScores[1]}</div>
+                    <div class="cell team-score-right">${gameState.teamScores[1]}</div>
                 </div>
             </div>
         </div>`;
@@ -82,29 +68,19 @@ function renderAudienceView(gameState) {
 
 // Helper function to render each answer cell
 function renderAnswerCell(answer, sequenceNumber) {
-    // If no answer exists, return an empty cell styled similarly to unrevealed cells
     if (!answer) {
-        return `
-            <div class="column-left empty-cell">
-            </div>
-        `;
+        return `<div class="cell answer-cell empty"></div>`;
     }
 
-    // Determine the class for the cell, whether it's revealed or not
     const cellClass = answer.revealed ? "revealed" : "";
-
-    // Sequence number is always visible when there is an answer
-    const sequenceHTML = `<span class="sequence-number" style="font-weight: bold;">${sequenceNumber}. </span>`;
-
-    // Answer and points are only visible if the answer is revealed
-    const answerText = answer.revealed ? `<span class="answer-text" style="flex: 1;">${answer.answer}</span>` : '<span style="flex: 1;">???</span>';
-    const pointsText = answer.revealed ? `<span class="points-text" style="font-weight: bold;">${answer.points} pts</span>` : '';
+    const answerText = answer.revealed ? answer.answer : '???';
+    const pointsText = answer.revealed ? `${answer.points}` : '';
 
     return `
-        <div class="column-left ${cellClass}">
-            ${sequenceHTML}
-            ${answerText}
-            ${pointsText}
+        <div class="cell answer-cell ${cellClass}">
+            <span class="sequence">${sequenceNumber}</span>
+            <span class="text">${answerText}</span>
+            <span class="points">${pointsText}</span>
         </div>
     `;
 }
