@@ -37,32 +37,25 @@ function renderAudienceView(gameState) {
                 <h2>${currentQuestion.question}</h2>
             </div>
 
-            <!-- First three rows for answers -->
+            <!-- Rows for answers: Left column (1-4), Right column (5-8) -->
             <div class="row">
-                <div class="column-left ${currentQuestion.answers[0] && currentQuestion.answers[0].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[0] ? (currentQuestion.answers[0].revealed ? currentQuestion.answers[0].answer : '???') : ''}
-                </div>
-                <div class="column-right ${currentQuestion.answers[3] && currentQuestion.answers[3].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[3] ? (currentQuestion.answers[3].revealed ? currentQuestion.answers[3].answer : '???') : ''}
-                </div>
+                ${renderAnswerCell(currentQuestion.answers[0], 1)}
+                ${renderAnswerCell(currentQuestion.answers[4], 5)}
             </div>
 
             <div class="row">
-                <div class="column-left ${currentQuestion.answers[1] && currentQuestion.answers[1].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[1] ? (currentQuestion.answers[1].revealed ? currentQuestion.answers[1].answer : '???') : ''}
-                </div>
-                <div class="column-right ${currentQuestion.answers[4] && currentQuestion.answers[4].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[4] ? (currentQuestion.answers[4].revealed ? currentQuestion.answers[4].answer : '???') : ''}
-                </div>
+                ${renderAnswerCell(currentQuestion.answers[1], 2)}
+                ${renderAnswerCell(currentQuestion.answers[5], 6)}
             </div>
 
             <div class="row">
-                <div class="column-left ${currentQuestion.answers[2] && currentQuestion.answers[2].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[2] ? (currentQuestion.answers[2].revealed ? currentQuestion.answers[2].answer : '???') : ''}
-                </div>
-                <div class="column-right ${currentQuestion.answers[5] && currentQuestion.answers[5].revealed ? 'revealed' : ''}">
-                    ${currentQuestion.answers[5] ? (currentQuestion.answers[5].revealed ? currentQuestion.answers[5].answer : '???') : ''}
-                </div>
+                ${renderAnswerCell(currentQuestion.answers[2], 3)}
+                ${renderAnswerCell(currentQuestion.answers[6], 7)}
+            </div>
+
+            <div class="row">
+                ${renderAnswerCell(currentQuestion.answers[3], 4)}
+                ${renderAnswerCell(currentQuestion.answers[7], 8)}
             </div>
 
             <!-- Row: Team names -->
@@ -82,6 +75,35 @@ function renderAudienceView(gameState) {
                 <div class="team-score-right right-align" style="flex: 1;">${gameState.teamScores[1]}</div>
             </div>
         </div>`;
+}
+
+// Helper function to render each answer cell
+function renderAnswerCell(answer, sequenceNumber) {
+    // If no answer exists, return an empty cell styled similarly to unrevealed cells
+    if (!answer) {
+        return `
+            <div class="column-left empty-cell">
+            </div>
+        `;
+    }
+
+    // Determine the class for the cell, whether it's revealed or not
+    const cellClass = answer.revealed ? "revealed" : "";
+
+    // Sequence number is always visible when there is an answer
+    const sequenceHTML = `<span class="sequence-number" style="font-weight: bold;">${sequenceNumber}. </span>`;
+
+    // Answer and points are only visible if the answer is revealed
+    const answerText = answer.revealed ? `<span class="answer-text" style="flex: 1;">${answer.answer}</span>` : '<span style="flex: 1;">???</span>';
+    const pointsText = answer.revealed ? `<span class="points-text" style="font-weight: bold;">${answer.points} pts</span>` : '';
+
+    return `
+        <div class="column-left ${cellClass}">
+            ${sequenceHTML}
+            ${answerText}
+            ${pointsText}
+        </div>
+    `;
 }
 
 // Render Host Interface
