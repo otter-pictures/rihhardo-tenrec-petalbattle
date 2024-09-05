@@ -14,11 +14,9 @@ let gameState = {
     questions: [],
     teamScores: [0, 0],
     wrongAnswers: 0,  // Global strike count
-    teamNames: ['Team 1', 'Team 2']  // Default team names
+    teamNames: ['Team 1', 'Team 2'],  // Default team names
+    assignedPoints: [false, false]  // Track whether points have been assigned per question for each team
 };
-
-// Track which team was assigned points for the current question
-let assignedTeam = null;
 
 // Load questions from CSV
 const loadQuestions = () => {
@@ -76,23 +74,29 @@ io.on('connection', (socket) => {
 
     // Host assigns revealed points to a team
     socket.on('assign-revealed-points', (data) => {
-        const { teamIndex, points } = data;
+        const { teamIndex } = data;
 
-        // If points have already been assigned to the opposite team, deduct from them
-        if (assignedTeam !== null && assignedTeam !== teamIndex) {
-            gameState.teamScores[assignedTeam] -= points;
-            console.log(`Deducted ${points} points from Team ${assignedTeam + 1}`);
+        // Ensure points can only be assigned once per question
+        if (!gameState.assignedPoints[teamIndex]) {
+            const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
+
+            // Calculate total points for revealed answers
+            const points = currentQuestion.answers.reduce((sum, answer) => {
+                return answer.revealed ? sum + answer.points : sum;
+            }, 0);
+
+            // Assign points to the selected team
+            gameState.teamScores[teamIndex] += points;
+            console.log(`Assigned ${points} points to Team ${teamIndex + 1}`);
+
+            // Mark points as assigned for this team in the current question
+            gameState.assignedPoints[teamIndex] = true;
+
+            // Emit the updated game state to all clients
+            io.emit('game-update', gameState);
+        } else {
+            console.log(`Points already assigned to Team ${teamIndex + 1} for this question.`);
         }
-
-        // Assign points to the selected team
-        gameState.teamScores[teamIndex] += points;
-        console.log(`Assigned ${points} points to Team ${teamIndex + 1}`);
-
-        // Update the assigned team for the current question
-        assignedTeam = teamIndex;
-
-        // Emit the updated game state to all clients
-        io.emit('game-update', gameState);
     });
 
     // Host sets manual points for a team
@@ -128,8 +132,9 @@ io.on('connection', (socket) => {
             gameState.currentQuestionIndex -= 1;
         }
 
-        // Reset wrong answers (strikes) for the new question
-        gameState.wrongAnswers = 0;  
+        // Reset wrong answers (strikes) and points assignment tracking for the new question
+        gameState.wrongAnswers = 0;
+        gameState.assignedPoints = [false, false];  // Reset points assignment for both teams
 
         io.emit('game-update', gameState);  // Broadcast updated state
     });
