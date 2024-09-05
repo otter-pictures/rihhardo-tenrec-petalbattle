@@ -13,9 +13,12 @@ let gameState = {
     currentQuestionIndex: 0,
     questions: [],
     teamScores: [0, 0],
-    wrongAnswers: 0,  // Global strike count
-    teamNames: ['Team 1', 'Team 2'],  // Default team names
-    assignedPoints: [false, false]  // Track whether points have been assigned per question for each team
+    wrongAnswers: 0, 
+    teamNames: ['-', '-'],
+    assignedPoints: [false, false],
+    gameStarted: false,  // New property to track if the game has started
+    questionRevealed: false,  // New property to track if the question is revealed
+    revealedQuestions: [],  // New array to track which questions have been revealed
 };
 
 // Load questions from CSV
@@ -123,7 +126,23 @@ io.on('connection', (socket) => {
         io.emit('game-update', gameState);
     });
 
-    // Handle changing questions
+    // New event handler for starting the game
+    socket.on('start-game', () => {
+        gameState.gameStarted = true;
+        gameState.questionRevealed = false;
+        io.emit('game-update', gameState);
+    });
+
+    // New event handler for revealing the question
+    socket.on('reveal-question', () => {
+        if (!gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+            gameState.revealedQuestions.push(gameState.currentQuestionIndex);
+        }
+        gameState.questionRevealed = true;
+        io.emit('game-update', gameState);
+    });
+
+    // Update the change-question event
     socket.on('change-question', (data) => {
         const { direction } = data;
         if (direction === 'next' && gameState.currentQuestionIndex < gameState.questions.length - 1) {
@@ -134,9 +153,12 @@ io.on('connection', (socket) => {
 
         // Reset wrong answers (strikes) and points assignment tracking for the new question
         gameState.wrongAnswers = 0;
-        gameState.assignedPoints = [false, false];  // Reset points assignment for both teams
+        gameState.assignedPoints = [false, false];
+        
+        // Set questionRevealed based on whether this question has been revealed before
+        gameState.questionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
 
-        io.emit('game-update', gameState);  // Broadcast updated state
+        io.emit('game-update', gameState);
     });
 
     socket.on('disconnect', () => {

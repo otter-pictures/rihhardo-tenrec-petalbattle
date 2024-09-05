@@ -25,6 +25,75 @@ const hostInterface = document.getElementById('host-interface');
 const audienceInterface = document.getElementById('audience-interface');
 
 function renderAudienceView(gameState) {
+    if (!gameState.gameStarted) {
+        renderStartScreen(gameState);
+    } else if (!gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+        renderEmptyBoard(gameState);
+    } else {
+        renderGameBoard(gameState);
+    }
+}
+
+function renderStartScreen(gameState) {
+    audienceInterface.innerHTML = `
+        <div class="start-screen">
+            <p>Rihhardo-Tenrec-Tulbilahing esitleb:</p>
+            <h1>Joomamäng</h1>
+            <div class="team-names">
+                <h2>${gameState.teamNames[0]}</h2>
+                <h2>VS</h2>
+                <h2>${gameState.teamNames[1]}</h2>
+            </div>
+        </div>
+    `;
+}
+
+function renderEmptyBoard(gameState) {
+    audienceInterface.innerHTML = `
+        <div class="audience-container">
+            <div class="question-header">
+                <h2>Get ready for the next question!</h2>
+            </div>
+            <div class="gameboard">
+                <div class="row">
+                    ${renderEmptyCell()}
+                    ${renderEmptyCell()}
+                </div>
+                <div class="row">
+                    ${renderEmptyCell()}
+                    ${renderEmptyCell()}
+                </div>
+                <div class="row">
+                    ${renderEmptyCell()}
+                    ${renderEmptyCell()}
+                </div>
+                <div class="row">
+                    ${renderEmptyCell()}
+                    ${renderEmptyCell()}
+                </div>
+                <div class="small-gap"></div>               
+                <div class="row team-names">
+                    <div class="cell team-name-left">${gameState.teamNames[0]}</div>
+                    <div class="cell team-name-right">${gameState.teamNames[1]}</div>
+                </div>
+                <div class="row scores-strikes">
+                    <div class="cell team-score-left">${gameState.teamScores[0]}</div>
+                    <div class="strikes">
+                        <div class="strike"></div>
+                        <div class="strike"></div>
+                        <div class="strike"></div>
+                    </div>
+                    <div class="cell team-score-right">${gameState.teamScores[1]}</div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function renderEmptyCell() {
+    return `<div class="cell answer-cell empty"></div>`;
+}
+
+function renderGameBoard(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
     audienceInterface.innerHTML = `
@@ -90,15 +159,28 @@ function renderAnswerCell(answer, sequenceNumber) {
 // Render Host Interface
 function renderHostView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
+    const isQuestionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
 
     hostInterface.innerHTML = `
         <div class="host-container">
+            ${!gameState.gameStarted ? `
+                <div class="section game-start-section">
+                    <h2 class="section-title">Start Game</h2>
+                    <div class="content-box">
+                        <button class="btn primary" onclick="startGame()">Start Game</button>
+                    </div>
+                </div>
+            ` : ''}
+            
             <div class="section question-section">
                 <h2 class="section-title">Current Question</h2>
                 <div class="content-box">
                     <p class="question-text">${currentQuestion.question}</p>
                     <div class="button-group">
                         <button class="btn secondary" onclick="prevQuestion()">Previous</button>
+                        <button class="btn primary" onclick="revealQuestion()" ${isQuestionRevealed ? 'disabled' : ''}>
+                            ${isQuestionRevealed ? 'Question Revealed' : 'Reveal Question'}
+                        </button>
                         <button class="btn secondary" onclick="nextQuestion()">Next</button>
                     </div>
                 </div>
@@ -222,4 +304,13 @@ function prevQuestion() {
 // Function to reset wrong answers
 function resetWrongAnswers() {
     socket.emit('reset-wrong-answers');
+}
+
+// New function to start the game
+function startGame() {
+    socket.emit('start-game');
+}
+
+function revealQuestion() {
+    socket.emit('reveal-question');
 }

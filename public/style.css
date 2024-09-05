@@ -49,7 +49,7 @@ body {
             var(--stripe-color-1) 50%,
             var(--stripe-color-1) 100%
         );
-    background-size: 100% 8px;
+    background-size: 100% 16px;
     animation: scrollStripes 1s linear infinite;
 }
 
@@ -58,7 +58,7 @@ body {
         background-position: 0 0;
     }
     100% {
-        background-position: 0 8px;
+        background-position: 0 16px;
     }
 }
 
@@ -329,4 +329,70 @@ body {
         width: 100%;
     }
 }
+
+.start-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.start-screen h1 {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+}
+
+.start-screen .team-names {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.start-screen .team-names h2 {
+    font-size: 3rem;
+}
+
+.start-screen p {
+    font-size: 1.5rem;
+}
+
+.empty-board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    text-align: center;
+}
+
+.empty-board h2 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+}
+
+.empty-board .team-names {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.empty-board .team-names h3 {
+    font-size: 2rem;
+}
+
+/* ... existing styles ... */
+
+.answer-cell.empty {
+    background-color: var(--cell-bg-color);
+    box-shadow: 
+        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(69, 99, 208, 0.8),
+        inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
+}
+
+/* ... rest of the styles ... */
 
