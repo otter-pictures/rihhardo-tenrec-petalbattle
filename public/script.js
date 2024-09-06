@@ -1,44 +1,38 @@
-let gameState = {};  // Global variable to store the game state
-
 const socket = io();
+const gameState = {};
+const sounds = {
+    wrong: new Audio('/sounds/wrong.mp3'),
+    correct: new Audio('/sounds/correct.mp3')
+};
+const interfaces = {
+    host: document.getElementById('host-interface'),
+    audience: document.getElementById('audience-interface')
+};
 
-const wrongSound = new Audio('/sounds/wrong.mp3');
-const correctSound = new Audio('/sounds/correct.mp3');
+// Socket event listeners
+socket.on('connect', () => console.log('Connected to the server with Socket.io'));
+socket.on('game-update', handleGameUpdate);
 
-socket.on('connect', () => {
-    console.log('Connected to the server with Socket.io');
-});
-
-// Handle game state updates from the server
-socket.on('game-update', (updatedGameState) => {
-    gameState = updatedGameState;  // Update the global game state
-    console.log('Game update received:', gameState);
-
-    // Render the game state for the host or audience
-    if (hostInterface) {
-        renderHostView(gameState);
-    }
-    if (audienceInterface) {
-        renderAudienceView(gameState);
-    }
-});
-
-// DOM elements for Host and Audience view
-const hostInterface = document.getElementById('host-interface');
-const audienceInterface = document.getElementById('audience-interface');
+// Main render functions
+function renderView(gameState) {
+    if (interfaces.host) renderHostView(gameState);
+    if (interfaces.audience) renderAudienceView(gameState);
+}
 
 function renderAudienceView(gameState) {
-    if (!gameState.gameStarted) {
+    const { gameStarted, revealedQuestions, currentQuestionIndex } = gameState;
+    if (!gameStarted) {
         renderStartScreen(gameState);
-    } else if (!gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+    } else if (!revealedQuestions.includes(currentQuestionIndex)) {
         renderEmptyBoard(gameState);
     } else {
         renderGameBoard(gameState);
     }
 }
 
+// Helper functions for rendering
 function renderStartScreen(gameState) {
-    audienceInterface.innerHTML = `
+    interfaces.audience.innerHTML = `
         <div class="start-screen">
             <p>Rihhardo-Tenrec-Tulbilahing esitleb:</p>
             <h1>Joomamäng</h1>
@@ -52,7 +46,7 @@ function renderStartScreen(gameState) {
 }
 
 function renderEmptyBoard(gameState) {
-    audienceInterface.innerHTML = `
+    interfaces.audience.innerHTML = `
         <div class="audience-container">
             <div class="question-header hidden">
                 <h2>Get ready for the next question!</h2>
@@ -99,7 +93,7 @@ function renderEmptyCell() {
 function renderGameBoard(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
-    audienceInterface.innerHTML = `
+    interfaces.audience.innerHTML = `
         <div class="audience-container">
             <div class="question-header">
                 <h2>${currentQuestion.question}</h2>
@@ -166,20 +160,20 @@ function renderHostView(gameState) {
     const anyAnswerRevealed = currentQuestion.answers.some(answer => answer.revealed);
     const allAnswersRevealed = currentQuestion.answers.every(answer => answer.revealed);
 
-    hostInterface.innerHTML = `
+    interfaces.host.innerHTML = `
         <div class="host-container">
             <div class="section">
                 <div class="section-header">
                     <h2 class="section-title">Question</h2>
-                    <button class="btn primary" onclick="revealQuestion()" ${isQuestionRevealed || !gameState.gameStarted ? 'disabled' : ''}>
+                    <button class="btn primary" onclick="actions.revealQuestion()" ${isQuestionRevealed || !gameState.gameStarted ? 'disabled' : ''}>
                         ${isQuestionRevealed ? 'Revealed' : 'Reveal'}
                     </button>
                 </div>
                 <div class="content-box">
                     <p class="question-text">${currentQuestion.question}</p>
                     <div class="button-group">
-                        <button class="btn secondary" onclick="prevQuestion()" ${!gameState.gameStarted || !isQuestionRevealed ? 'disabled' : ''}>Previous</button>
-                        <button class="btn secondary" onclick="nextQuestion()" ${!gameState.gameStarted || !isQuestionRevealed || !allAnswersRevealed ? 'disabled' : ''}>Next</button>
+                        <button class="btn secondary" onclick="actions.changeQuestion('prev')" ${!gameState.gameStarted || !isQuestionRevealed ? 'disabled' : ''}>Previous</button>
+                        <button class="btn secondary" onclick="actions.changeQuestion('next')" ${!gameState.gameStarted || !isQuestionRevealed || !allAnswersRevealed ? 'disabled' : ''}>Next</button>
                     </div>
                 </div>
             </div>
@@ -187,7 +181,7 @@ function renderHostView(gameState) {
             <div class="section">
                 <div class="section-header">
                     <h2 class="section-title">Answers</h2>
-                    <button class="btn primary" onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 || !isQuestionRevealed ? 'disabled' : ''}>
+                    <button class="btn primary" onclick="actions.markWrongAnswer()" ${gameState.wrongAnswers >= 3 || !isQuestionRevealed ? 'disabled' : ''}>
                         Mark Wrong (${gameState.wrongAnswers}/3)
                     </button>
                 </div>
@@ -197,7 +191,7 @@ function renderHostView(gameState) {
                             <span class="answer-text">${answer.answer}</span>
                             <span class="answer-points">${answer.points}</span>
                             <button class="btn ${answer.revealed ? 'disabled' : 'secondary'}" 
-                                    onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
+                                    onclick="actions.revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
                                     ${answer.revealed || !isQuestionRevealed ? 'disabled' : ''}>
                                 ${answer.revealed ? 'Revealed' : 'Reveal'}
                             </button>
@@ -209,7 +203,7 @@ function renderHostView(gameState) {
             <div class="section">
                 <div class="section-header">
                     <h2 class="section-title">Controls</h2>
-                    <button class="btn primary" onclick="startGame()" ${gameState.gameStarted ? 'disabled' : ''}>
+                    <button class="btn primary" onclick="actions.startGame()" ${gameState.gameStarted ? 'disabled' : ''}>
                         ${gameState.gameStarted ? 'Game Started' : 'Start Game'}
                     </button>
                 </div>
@@ -220,17 +214,17 @@ function renderHostView(gameState) {
                                 ${gameState.editingTeam === teamIndex ? `
                                     <div class="team-name-edit">
                                         <input type="text" class="input" value="${gameState.teamNames[teamIndex]}" id="team${teamIndex+1}-name-input" />
-                                        <button class="btn secondary" onclick="updateTeamName(${teamIndex}, document.getElementById('team${teamIndex+1}-name-input').value)">Save</button>
-                                        <button class="btn secondary" onclick="toggleEditTeamName(${teamIndex})">Cancel</button>
+                                        <button class="btn secondary" onclick="actions.updateTeamName(${teamIndex}, document.getElementById('team${teamIndex+1}-name-input').value)">Save</button>
+                                        <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Cancel</button>
                                     </div>
                                 ` : `
                                     <div class="team-control-row">
                                         <span class="team-name">${gameState.teamNames[teamIndex]}</span>
-                                        <button class="btn secondary" onclick="toggleEditTeamName(${teamIndex})">Edit</button>
+                                        <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Edit</button>
                                         <input type="number" class="input short-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
-                                        <button class="btn secondary" onclick="setManualPoints(${teamIndex})">Set</button>
+                                        <button class="btn secondary" onclick="actions.setManualPoints(${teamIndex})">Set</button>
                                         <button class="btn ${gameState.assignedPoints[teamIndex] || !anyAnswerRevealed ? 'disabled' : 'secondary'} assign-revealed-btn" 
-                                                onclick="assignRevealedPoints(${teamIndex})"
+                                                onclick="actions.assignRevealedPoints(${teamIndex})"
                                                 ${gameState.assignedPoints[teamIndex] || !anyAnswerRevealed ? 'disabled' : ''}>
                                             ${gameState.assignedPoints[teamIndex] ? 'Assigned' : 'Assign Revealed'}
                                         </button>
@@ -245,110 +239,58 @@ function renderHostView(gameState) {
     `;
 }
 
-// New function to toggle team name edit state
-function toggleEditTeamName(teamIndex) {
-    if (gameState.editingTeam === teamIndex) {
+// Event handlers
+function handleGameUpdate(updatedGameState) {
+    Object.assign(gameState, updatedGameState);
+    console.log('Game update received:', gameState);
+    renderView(gameState);
+}
+
+// Action functions
+const actions = {
+    toggleEditTeamName: (teamIndex) => {
+        gameState.editingTeam = gameState.editingTeam === teamIndex ? null : teamIndex;
+        renderHostView(gameState);
+    },
+    updateTeamName: (teamIndex, newName) => {
+        socket.emit('update-team-name', { teamIndex, newName });
         gameState.editingTeam = null;
-    } else {
-        gameState.editingTeam = teamIndex;
-    }
-    renderHostView(gameState);
-}
+        renderHostView(gameState);
+    },
+    assignRevealedPoints: (teamIndex) => {
+        if (!gameState.questions) return console.error("Game state is not yet available.");
+        const points = gameState.questions[gameState.currentQuestionIndex].answers.reduce((sum, answer) => 
+            answer.revealed ? sum + answer.points : sum, 0);
+        console.log(`Assigning ${points} points to Team ${teamIndex + 1}`);
+        socket.emit('assign-revealed-points', { teamIndex, points });
+    },
+    setManualPoints: (teamIndex) => {
+        const points = parseInt(document.getElementById(`team${teamIndex + 1}-points`).value);
+        if (isNaN(points)) return console.error("Invalid points input.");
+        socket.emit('set-manual-points', { teamIndex, points });
+    },
+    revealAnswer: (questionIndex, answerIndex) => {
+        socket.emit('reveal-answer', { questionIndex, answerIndex });
+        if (!gameState.assignedPoints[0] && !gameState.assignedPoints[1]) {
+            sounds.correct.play();
+        }
+    },
+    markWrongAnswer: () => {
+        if (gameState.wrongAnswers < 3) {
+            socket.emit('wrong-answer');
+            sounds.wrong.play();
+        }
+    },
+    changeQuestion: (direction) => socket.emit('change-question', { direction }),
+    resetWrongAnswers: () => socket.emit('reset-wrong-answers'),
+    startGame: () => socket.emit('start-game'),
+    revealQuestion: () => socket.emit('reveal-question')
+};
 
-// Update the updateTeamName function
-function updateTeamName(teamIndex, newName) {
-    socket.emit('update-team-name', { teamIndex, newName });
-    gameState.editingTeam = null;
-    renderHostView(gameState);
-}
-
-// Function to assign revealed points
-function assignRevealedPoints(teamIndex) {
-    if (!gameState || !gameState.questions) {
-        console.error("Game state is not yet available.");
-        return;  // Exit if gameState is not available
-    }
-
-    const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
-
-    // Calculate the total points for revealed answers
-    const points = currentQuestion.answers.reduce((sum, answer) => {
-        return answer.revealed ? sum + answer.points : sum;
-    }, 0);
-
-    console.log(`Assigning ${points} points to Team ${teamIndex + 1}`);
-
-    // Emit the event to assign revealed points to the team
-    socket.emit('assign-revealed-points', { teamIndex, points });
-}
-
-// Emit event to manually set team points
-function setManualPoints(teamIndex) {
-    const points = parseInt(document.getElementById(`team${teamIndex + 1}-points`).value);
-    if (isNaN(points)) {
-        console.error("Invalid points input.");
-        return;
-    }
-
-    // Emit the event to manually set points for the team
-    socket.emit('set-manual-points', { teamIndex, points });
-}
-
-function revealAnswer(questionIndex, answerIndex) {
-    socket.emit('reveal-answer', { questionIndex, answerIndex });
-    
-    // Play sound only if points haven't been assigned to either team
-    if (!gameState.assignedPoints[0] && !gameState.assignedPoints[1]) {
-        correctSound.play();
-    }
-}
-
-// Function to mark wrong answer, restricted to a max of 3 strikes
-function markWrongAnswer() {
-    if (gameState.wrongAnswers < 3) {
-        socket.emit('wrong-answer');
-        wrongSound.play();
-    }
-}
-
-// Handle question navigation
-function nextQuestion() {
-    socket.emit('change-question', { direction: 'next' });
-}
-
-function prevQuestion() {
-    socket.emit('change-question', { direction: 'prev' });
-}
-
-// Function to reset wrong answers
-function resetWrongAnswers() {
-    socket.emit('reset-wrong-answers');
-}
-
-// New function to start the game
-function startGame() {
-    socket.emit('start-game');
-}
-
-function revealQuestion() {
-    socket.emit('reveal-question');
-}
-
-// Add this function at the end of the file
+// Background animation
 function setupBackgroundAnimation() {
     const body = document.body;
-    let offset = 0;
-
-    function animate() {
-        // Slow down the animation by updating less frequently
-        offset = (offset + 0.5) % 16; // Reduced from 1 to 0.5 for slower movement
-        body.style.backgroundPosition = `0 ${offset}px`;
-        requestAnimationFrame(animate);
-    }
-
-    // Only set up the animation for the audience view
-    if (audienceInterface) {
-        // Set up the initial background
+    if (interfaces.audience) {
         body.style.backgroundImage = `
             linear-gradient(
                 0deg,
@@ -359,15 +301,19 @@ function setupBackgroundAnimation() {
             )
         `;
         body.style.backgroundSize = '100% 16px';
-
-        // Start the animation
-        animate();
-    } else if (hostInterface) {
-        // For host view, set a solid background color
+        let offset = 0;
+        (function animate() {
+            offset = (offset + 0.5) % 16;
+            body.style.backgroundPosition = `0 ${offset}px`;
+            requestAnimationFrame(animate);
+        })();
+    } else if (interfaces.host) {
         body.style.backgroundColor = 'var(--main-bg-color)';
         body.style.backgroundImage = 'none';
     }
 }
 
-// Call this function when the page loads
 document.addEventListener('DOMContentLoaded', setupBackgroundAnimation);
+
+// Expose necessary functions to global scope
+window.actions = actions;
