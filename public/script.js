@@ -322,3 +322,41 @@ function startGame() {
 function revealQuestion() {
     socket.emit('reveal-question');
 }
+
+// Add this function at the end of the file
+function setupBackgroundAnimation() {
+    const body = document.body;
+    let offset = 0;
+
+    function animate() {
+        // Slow down the animation by updating less frequently
+        offset = (offset + 0.5) % 16; // Reduced from 1 to 0.5 for slower movement
+        body.style.backgroundPosition = `0 ${offset}px`;
+        requestAnimationFrame(animate);
+    }
+
+    // Only set up the animation for the audience view
+    if (audienceInterface) {
+        // Set up the initial background
+        body.style.backgroundImage = `
+            linear-gradient(
+                0deg,
+                var(--main-bg-color) 0%,
+                var(--main-bg-color) 50%,
+                var(--stripe-color-1) 50%,
+                var(--stripe-color-1) 100%
+            )
+        `;
+        body.style.backgroundSize = '100% 16px';
+
+        // Start the animation
+        animate();
+    } else if (hostInterface) {
+        // For host view, set a solid background color
+        body.style.backgroundColor = 'var(--main-bg-color)';
+        body.style.backgroundImage = 'none';
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', setupBackgroundAnimation);

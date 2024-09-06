@@ -35,17 +35,6 @@ body {
     color: var(--text-color);
     position: relative;
     overflow: hidden;
-    background-image: 
-        linear-gradient(
-            0deg,
-            var(--main-bg-color) 0%,
-            var(--main-bg-color) 50%,
-            var(--stripe-color-1) 50%,
-            var(--stripe-color-1) 100%
-        );
-    background-size: 100% 16px;
-    animation: scrollStripes 1s linear infinite;
-}
 
 body,
 .question-header,
@@ -80,6 +69,7 @@ body,
     gap: 2vh;
     position: relative;
     z-index: 1;
+    padding-top: 5vh; /* for displaying on AGE's office TV */
 }
 
 .gameboard {
