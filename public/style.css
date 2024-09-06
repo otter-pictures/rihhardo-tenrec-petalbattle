@@ -107,6 +107,11 @@ body,
     text-align: center;
     font-size: clamp(18px, 3.5vw, 54px);
     line-height: 1.2;
+    transition: opacity 0.3s ease; /* Add smooth transition */
+}
+
+.question-header.hidden {
+    opacity: 0; /* Make it fully transparent when hidden */
 }
 
 /* ===== ANSWER CELLS ===== */
