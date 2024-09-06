@@ -174,8 +174,8 @@ function renderHostView(gameState) {
                 <div class="content-box">
                     <p class="question-text">${currentQuestion.question}</p>
                     <div class="button-group">
-                        <button class="btn secondary" onclick="prevQuestion()" ${!gameState.gameStarted ? 'disabled' : ''}>Previous</button>
-                        <button class="btn secondary" onclick="nextQuestion()" ${!gameState.gameStarted ? 'disabled' : ''}>Next</button>
+                        <button class="btn secondary" onclick="prevQuestion()" ${!gameState.gameStarted || !isQuestionRevealed ? 'disabled' : ''}>Previous</button>
+                        <button class="btn secondary" onclick="nextQuestion()" ${!gameState.gameStarted || !isQuestionRevealed ? 'disabled' : ''}>Next</button>
                     </div>
                 </div>
             </div>

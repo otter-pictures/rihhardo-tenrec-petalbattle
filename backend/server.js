@@ -148,7 +148,7 @@ io.on('connection', (socket) => {
 
     // Update the change-question event
     socket.on('change-question', (data) => {
-        if (gameState.gameStarted) {
+        if (gameState.gameStarted && gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
             const { direction } = data;
             if (direction === 'next' && gameState.currentQuestionIndex < gameState.questions.length - 1) {
                 gameState.currentQuestionIndex += 1;
@@ -164,6 +164,8 @@ io.on('connection', (socket) => {
             gameState.questionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
 
             io.emit('game-update', gameState);
+        } else {
+            console.log('Cannot change question: game not started or current question not revealed');
         }
     });
 
