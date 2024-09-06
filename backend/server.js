@@ -71,18 +71,22 @@ io.on('connection', (socket) => {
     // Host reveals an answer
     socket.on('reveal-answer', (data) => {
         const { questionIndex, answerIndex } = data;
-        gameState.questions[questionIndex].answers[answerIndex].revealed = true;
-        io.emit('game-update', gameState);
+        if (gameState.gameStarted && gameState.revealedQuestions.includes(questionIndex)) {
+            gameState.questions[questionIndex].answers[answerIndex].revealed = true;
+            io.emit('game-update', gameState);
+        }
     });
 
     // Host assigns revealed points to a team
     socket.on('assign-revealed-points', (data) => {
         const { teamIndex } = data;
+        const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
 
-        // Ensure points can only be assigned once per question
-        if (!gameState.assignedPoints[teamIndex]) {
-            const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
-
+        if (gameState.gameStarted && 
+            gameState.revealedQuestions.includes(gameState.currentQuestionIndex) &&
+            currentQuestion.answers.some(answer => answer.revealed) &&
+            !gameState.assignedPoints[teamIndex]) {
+            
             // Calculate total points for revealed answers
             const points = currentQuestion.answers.reduce((sum, answer) => {
                 return answer.revealed ? sum + answer.points : sum;
@@ -98,7 +102,7 @@ io.on('connection', (socket) => {
             // Emit the updated game state to all clients
             io.emit('game-update', gameState);
         } else {
-            console.log(`Points already assigned to Team ${teamIndex + 1} for this question.`);
+            console.log(`Unable to assign points to Team ${teamIndex + 1}.`);
         }
     });
 
@@ -135,30 +139,32 @@ io.on('connection', (socket) => {
 
     // New event handler for revealing the question
     socket.on('reveal-question', () => {
-        if (!gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+        if (gameState.gameStarted && !gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
             gameState.revealedQuestions.push(gameState.currentQuestionIndex);
+            gameState.questionRevealed = true;
+            io.emit('game-update', gameState);
         }
-        gameState.questionRevealed = true;
-        io.emit('game-update', gameState);
     });
 
     // Update the change-question event
     socket.on('change-question', (data) => {
-        const { direction } = data;
-        if (direction === 'next' && gameState.currentQuestionIndex < gameState.questions.length - 1) {
-            gameState.currentQuestionIndex += 1;
-        } else if (direction === 'prev' && gameState.currentQuestionIndex > 0) {
-            gameState.currentQuestionIndex -= 1;
+        if (gameState.gameStarted) {
+            const { direction } = data;
+            if (direction === 'next' && gameState.currentQuestionIndex < gameState.questions.length - 1) {
+                gameState.currentQuestionIndex += 1;
+            } else if (direction === 'prev' && gameState.currentQuestionIndex > 0) {
+                gameState.currentQuestionIndex -= 1;
+            }
+
+            // Reset wrong answers (strikes) and points assignment tracking for the new question
+            gameState.wrongAnswers = 0;
+            gameState.assignedPoints = [false, false];
+            
+            // Set questionRevealed based on whether this question has been revealed before
+            gameState.questionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
+
+            io.emit('game-update', gameState);
         }
-
-        // Reset wrong answers (strikes) and points assignment tracking for the new question
-        gameState.wrongAnswers = 0;
-        gameState.assignedPoints = [false, false];
-        
-        // Set questionRevealed based on whether this question has been revealed before
-        gameState.questionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
-
-        io.emit('game-update', gameState);
     });
 
     socket.on('disconnect', () => {

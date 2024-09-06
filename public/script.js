@@ -160,21 +160,22 @@ function renderAnswerCell(answer, sequenceNumber) {
 function renderHostView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
     const isQuestionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
+    const anyAnswerRevealed = currentQuestion.answers.some(answer => answer.revealed);
 
     hostInterface.innerHTML = `
         <div class="host-container">
             <div class="section">
                 <div class="section-header">
                     <h2 class="section-title">Question</h2>
-                    <button class="btn primary" onclick="revealQuestion()" ${isQuestionRevealed ? 'disabled' : ''}>
+                    <button class="btn primary" onclick="revealQuestion()" ${isQuestionRevealed || !gameState.gameStarted ? 'disabled' : ''}>
                         ${isQuestionRevealed ? 'Revealed' : 'Reveal'}
                     </button>
                 </div>
                 <div class="content-box">
                     <p class="question-text">${currentQuestion.question}</p>
                     <div class="button-group">
-                        <button class="btn secondary" onclick="prevQuestion()">Previous</button>
-                        <button class="btn secondary" onclick="nextQuestion()">Next</button>
+                        <button class="btn secondary" onclick="prevQuestion()" ${!gameState.gameStarted ? 'disabled' : ''}>Previous</button>
+                        <button class="btn secondary" onclick="nextQuestion()" ${!gameState.gameStarted ? 'disabled' : ''}>Next</button>
                     </div>
                 </div>
             </div>
@@ -182,7 +183,7 @@ function renderHostView(gameState) {
             <div class="section">
                 <div class="section-header">
                     <h2 class="section-title">Answers</h2>
-                    <button class="btn primary" onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 ? 'disabled' : ''}>
+                    <button class="btn primary" onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 || !isQuestionRevealed ? 'disabled' : ''}>
                         Mark Wrong (${gameState.wrongAnswers}/3)
                     </button>
                 </div>
@@ -193,7 +194,7 @@ function renderHostView(gameState) {
                             <span class="answer-points">${answer.points}</span>
                             <button class="btn ${answer.revealed ? 'disabled' : 'secondary'}" 
                                     onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
-                                    ${answer.revealed ? 'disabled' : ''}>
+                                    ${answer.revealed || !isQuestionRevealed ? 'disabled' : ''}>
                                 ${answer.revealed ? 'Revealed' : 'Reveal'}
                             </button>
                         </li>
@@ -224,9 +225,9 @@ function renderHostView(gameState) {
                                         <button class="btn secondary" onclick="toggleEditTeamName(${teamIndex})">Edit</button>
                                         <input type="number" class="input short-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
                                         <button class="btn secondary" onclick="setManualPoints(${teamIndex})">Set</button>
-                                        <button class="btn ${gameState.assignedPoints[teamIndex] ? 'disabled' : 'secondary'} assign-revealed-btn" 
+                                        <button class="btn ${gameState.assignedPoints[teamIndex] || !anyAnswerRevealed ? 'disabled' : 'secondary'} assign-revealed-btn" 
                                                 onclick="assignRevealedPoints(${teamIndex})"
-                                                ${gameState.assignedPoints[teamIndex] ? 'disabled' : ''}>
+                                                ${gameState.assignedPoints[teamIndex] || !anyAnswerRevealed ? 'disabled' : ''}>
                                             ${gameState.assignedPoints[teamIndex] ? 'Assigned' : 'Assign Revealed'}
                                         </button>
                                     </div>
