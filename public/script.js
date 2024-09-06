@@ -51,7 +51,7 @@ function renderStartScreen(gameState) {
 function renderEmptyBoard(gameState) {
     audienceInterface.innerHTML = `
         <div class="audience-container">
-            <div class="question-header">
+            <div class="question-header hidden">
                 <h2>Get ready for the next question!</h2>
             </div>
             <div class="gameboard">

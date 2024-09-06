@@ -421,3 +421,34 @@ body {
 .assign-revealed-btn {
     margin-left: auto; /* Push the button to the right */
 }
+
+/* Start Screen Styles */
+.start-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.start-screen p {
+    font-size: 3vh;
+    margin-bottom: 2vh;
+}
+
+.start-screen h1 {
+    font-size: 8vh;
+    margin-bottom: 4vh;
+}
+
+.start-screen .team-names {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3vh;
+}
+
+.start-screen .team-names h2 {
+    font-size: 5vh;
+}
