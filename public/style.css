@@ -1,5 +1,6 @@
-/* General styles */
+/* ===== VARIABLES ===== */
 :root {
+  /* Colors */
   --main-bg-color: #001E8B;
   --cell-bg-color: #060B1C;
   --text-color: #ffffff;
@@ -8,31 +9,24 @@
   --strike-color: #dc3545;
   --sequence-bg-color: #FFFFFF;
   --sequence-text-color: #001E8B;
+  --stripe-color-1: rgba(70, 105, 231, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --input-bg-color: rgba(0, 0, 0, 0.2);
+  --input-border-color: rgba(255, 255, 255, 0.2);
+  --input-focus-shadow: rgba(70, 105, 231, 0.2);
+  --btn-disabled-bg: #cccccc;
+  --btn-disabled-color: #666666;
+  --btn-secondary-hover-bg: rgba(255, 255, 255, 0.1);
+
+  /* Sizes */
   --cell-padding: 1.25vh 2.5vh;
   --cell-font-size: 6vh;
   --gap: 1vh;
   --shadow-size: 0.2vh;
-  --stripe-color-1: rgba(70, 105, 231, 0.05);
 }
 
+/* ===== GLOBAL STYLES ===== */
 * { box-sizing: border-box; }
-
-body,
-.question-header,
-.cell,
-.answer-cell,
-.sequence,
-.text,
-.points,
-.team-name,
-.team-score,
-.strike {
-  font-family: "Inter", system-ui;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-style: normal;
-  text-transform: uppercase;
-}
 
 body {
     margin: 0;
@@ -53,16 +47,29 @@ body {
     animation: scrollStripes 1s linear infinite;
 }
 
-@keyframes scrollStripes {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 0 16px;
-    }
+body,
+.question-header,
+.cell,
+.answer-cell,
+.sequence,
+.text,
+.points,
+.team-name,
+.team-score,
+.strike {
+  font-family: "Inter", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  text-transform: uppercase;
 }
 
-/* Layout */
+@keyframes scrollStripes {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 16px; }
+}
+
+/* ===== LAYOUT ===== */
 .audience-container {
     display: grid;
     grid-template-rows: auto 1fr auto;
@@ -75,23 +82,12 @@ body {
     z-index: 1;
 }
 
-.question-header {
-    align-self: end;
-    text-align: center;
-    font-size: clamp(18px, 3.5vw, 54px);
-    line-height: 1.2;
-}
-
 .gameboard {
     align-self: center;
     display: flex;
     flex-direction: column;
     gap: var(--gap);
     width: 100%;
-}
-
-.small-gap {
-    margin: 2vh 0;
 }
 
 .row {
@@ -101,7 +97,19 @@ body {
     gap: var(--gap);
 }
 
-/* Answer cells */
+.small-gap {
+    margin: 2vh 0;
+}
+
+/* ===== QUESTION HEADER ===== */
+.question-header {
+    align-self: end;
+    text-align: center;
+    font-size: clamp(18px, 3.5vw, 54px);
+    line-height: 1.2;
+}
+
+/* ===== ANSWER CELLS ===== */
 .cell, .answer-cell {
     width: calc(50% - var(--gap) / 2);
     display: flex;
@@ -165,7 +173,7 @@ body {
     font-weight: 400;
 }
 
-/* Team names and scores */
+/* ===== TEAM NAMES AND SCORES ===== */
 .team-name, .team-score { 
     display: flex;
     font-size: 4vh;
@@ -180,7 +188,7 @@ body {
     justify-content: flex-end;
 }
 
-/* Strikes */
+/* ===== STRIKES ===== */
 .strikes {
     display: flex;
     justify-content: center;
@@ -203,7 +211,7 @@ body {
         inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
 }
 
-/* Host Interface Styles */
+/* ===== HOST INTERFACE STYLES ===== */
 .host-container {
     max-width: 800px;
     margin: 0 auto;
@@ -245,6 +253,7 @@ body {
     padding: 20px;
 }
 
+/* ===== BUTTONS ===== */
 .btn {
     padding: 8px 12px;
     border: 1px solid transparent;
@@ -254,7 +263,7 @@ body {
     font-size: 0.9rem;
     font-weight: 400;
     line-height: 1.5;
-    height: 36px; /* Set a fixed height */
+    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -262,7 +271,7 @@ body {
 
 .btn.primary {
     background-color: var(--revealed-color);
-    color: #FFFFFF;
+    color: var(--revealed-text-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -274,23 +283,52 @@ body {
 .btn.secondary {
     background-color: transparent;
     color: var(--text-color);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--input-border-color);
 }
 
 .btn.secondary:hover:not(:disabled) {
     border-color: rgba(255, 255, 255, 0.5);
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--btn-secondary-hover-bg);
 }
 
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
-    background-color: #cccccc;
-    color: #666666;
+    background-color: var(--btn-disabled-bg);
+    color: var(--btn-disabled-color);
     border: 1px solid transparent;
 }
 
+/* ===== INPUTS ===== */
+.input {
+    padding: 8px 12px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    flex-grow: 1;
+    min-width: 0;
+    transition: all 0.3s ease;
+}
+
+.input:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.input:focus:not(:disabled) {
+    outline: none;
+    border-color: var(--revealed-color);
+    box-shadow: 0 0 0 2px var(--input-focus-shadow);
+}
+
+.input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== TEAM CONTROLS ===== */
 .team-controls {
     display: flex;
     flex-direction: column;
@@ -311,33 +349,40 @@ body {
     align-items: center;
 }
 
-.input {
-    padding: 8px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.2);
-    color: var(--text-color);
-    font-size: 0.9rem;
-    flex-grow: 1;
-    min-width: 0;
-    transition: all 0.3s ease;
+.team-name-display, .team-name-edit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.input:hover:not(:disabled) {
-    border-color: rgba(255, 255, 255, 0.3);
+.team-name {
+    font-size: 1rem;
+    font-weight: 500;
 }
 
-.input:focus:not(:disabled) {
-    outline: none;
-    border-color: var(--revealed-color);
-    box-shadow: 0 0 0 2px rgba(70, 105, 231, 0.2);
+.team-controls-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
-.input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.team-control-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
 }
 
+.short-input {
+    max-width: 60px;
+}
+
+.assign-revealed-btn {
+    margin-left: auto;
+}
+
+/* ===== ANSWER LIST ===== */
 .answer-list {
     list-style-type: none;
     padding: 0;
@@ -366,6 +411,7 @@ body {
     font-weight: bold;
 }
 
+/* ===== MISC ===== */
 .button-group {
     display: flex;
     gap: 10px;
@@ -376,53 +422,7 @@ body {
     margin-bottom: 40px;
 }
 
-.team-name-display, .team-name-edit {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.team-name {
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.assign-revealed-btn {
-    margin-left: auto;
-}
-
-.team-controls-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.assign-revealed-container {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.assign-revealed-btn {
-    margin-left: auto;
-}
-
-.team-control-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%; /* Ensure the row takes full width */
-}
-
-.short-input {
-    max-width: 60px;
-}
-
-.assign-revealed-btn {
-    margin-left: auto; /* Push the button to the right */
-}
-
-/* Start Screen Styles */
+/* ===== START SCREEN STYLES ===== */
 .start-screen {
     display: flex;
     flex-direction: column;
