@@ -2,6 +2,8 @@ let gameState = {};  // Global variable to store the game state
 
 const socket = io();
 
+const wrongSound = new Audio('/sounds/wrong.mp3');
+
 socket.on('connect', () => {
     console.log('Connected to the server with Socket.io');
 });
@@ -298,6 +300,7 @@ function revealAnswer(questionIndex, answerIndex) {
 function markWrongAnswer() {
     if (gameState.wrongAnswers < 3) {
         socket.emit('wrong-answer');
+        wrongSound.play();
     }
 }
 
