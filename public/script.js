@@ -296,7 +296,11 @@ function setManualPoints(teamIndex) {
 
 function revealAnswer(questionIndex, answerIndex) {
     socket.emit('reveal-answer', { questionIndex, answerIndex });
-    correctSound.play();
+    
+    // Play sound only if points haven't been assigned to either team
+    if (!gameState.assignedPoints[0] && !gameState.assignedPoints[1]) {
+        correctSound.play();
+    }
 }
 
 // Function to mark wrong answer, restricted to a max of 3 strikes
