@@ -21,10 +21,10 @@ let gameState = {
     revealedQuestions: [],  // New array to track which questions have been revealed
 };
 
-// Load questions from CSV
-const loadQuestions = () => {
+// Refactor the loadQuestions function to use async/await
+const loadQuestions = async () => {
+    const questions = {};
     return new Promise((resolve, reject) => {
-        let questions = {};
         fs.createReadStream('questions.csv')
             .pipe(csv())
             .on('data', (row) => {
@@ -33,23 +33,24 @@ const loadQuestions = () => {
                 }
                 questions[row.question].push({ answer: row.answer, points: parseInt(row.points), revealed: false });
             })
-            .on('end', () => {
-                resolve(questions);
-            })
-            .on('error', (error) => {
-                reject(error);
-            });
+            .on('end', () => resolve(questions))
+            .on('error', (error) => reject(error));
     });
 };
 
-// Initialize questions on server startup
-loadQuestions().then((data) => {
-    gameState.questions = Object.keys(data).map((key) => ({
-        question: key,
-        answers: data[key]
-    }));
-    console.log("Questions loaded", gameState.questions);
-});
+// Use async/await for initializing questions
+(async () => {
+    try {
+        const data = await loadQuestions();
+        gameState.questions = Object.keys(data).map((key) => ({
+            question: key,
+            answers: data[key]
+        }));
+        console.log("Questions loaded", gameState.questions);
+    } catch (error) {
+        console.error("Error loading questions:", error);
+    }
+})();
 
 // Serve static frontend files from the "public" folder
 app.use(express.static(path.join(__dirname, '../public')));
@@ -68,38 +69,30 @@ io.on('connection', (socket) => {
         io.emit('game-update', gameState);  // Broadcast the updated game state to all clients
     });
 
-    // Host reveals an answer
-    socket.on('reveal-answer', (data) => {
-        const { questionIndex, answerIndex } = data;
+    // Refactor the reveal-answer event handler
+    socket.on('reveal-answer', ({ questionIndex, answerIndex }) => {
         if (gameState.gameStarted && gameState.revealedQuestions.includes(questionIndex)) {
             gameState.questions[questionIndex].answers[answerIndex].revealed = true;
             io.emit('game-update', gameState);
         }
     });
 
-    // Host assigns revealed points to a team
-    socket.on('assign-revealed-points', (data) => {
-        const { teamIndex } = data;
+    // Refactor the assign-revealed-points event handler
+    socket.on('assign-revealed-points', ({ teamIndex }) => {
         const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
-
-        if (gameState.gameStarted && 
+        const canAssignPoints = gameState.gameStarted && 
             gameState.revealedQuestions.includes(gameState.currentQuestionIndex) &&
             currentQuestion.answers.some(answer => answer.revealed) &&
-            !gameState.assignedPoints[teamIndex]) {
-            
-            // Calculate total points for revealed answers
-            const points = currentQuestion.answers.reduce((sum, answer) => {
-                return answer.revealed ? sum + answer.points : sum;
-            }, 0);
+            !gameState.assignedPoints[teamIndex];
 
-            // Assign points to the selected team
+        if (canAssignPoints) {
+            const points = currentQuestion.answers.reduce((sum, answer) => 
+                answer.revealed ? sum + answer.points : sum, 0);
+
             gameState.teamScores[teamIndex] += points;
-            console.log(`Assigned ${points} points to Team ${teamIndex + 1}`);
-
-            // Mark points as assigned for this team in the current question
             gameState.assignedPoints[teamIndex] = true;
 
-            // Emit the updated game state to all clients
+            console.log(`Assigned ${points} points to Team ${teamIndex + 1}`);
             io.emit('game-update', gameState);
         } else {
             console.log(`Unable to assign points to Team ${teamIndex + 1}.`);
@@ -146,21 +139,17 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Update the change-question event
-    socket.on('change-question', (data) => {
+    // Refactor the change-question event handler
+    socket.on('change-question', ({ direction }) => {
         if (gameState.gameStarted && gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
-            const { direction } = data;
             if (direction === 'next' && gameState.currentQuestionIndex < gameState.questions.length - 1) {
-                gameState.currentQuestionIndex += 1;
+                gameState.currentQuestionIndex++;
             } else if (direction === 'prev' && gameState.currentQuestionIndex > 0) {
-                gameState.currentQuestionIndex -= 1;
+                gameState.currentQuestionIndex--;
             }
 
-            // Reset wrong answers (strikes) and points assignment tracking for the new question
             gameState.wrongAnswers = 0;
             gameState.assignedPoints = [false, false];
-            
-            // Set questionRevealed based on whether this question has been revealed before
             gameState.questionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
 
             io.emit('game-update', gameState);
