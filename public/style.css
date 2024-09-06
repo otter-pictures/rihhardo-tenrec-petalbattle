@@ -411,12 +411,13 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    width: 100%; /* Ensure the row takes full width */
 }
 
 .short-input {
-    width: 60px;
+    max-width: 60px;
 }
 
 .assign-revealed-btn {
-    margin-left: auto;
+    margin-left: auto; /* Push the button to the right */
 }
