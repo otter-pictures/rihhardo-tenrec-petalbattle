@@ -35,6 +35,7 @@ body {
     color: var(--text-color);
     position: relative;
     overflow: hidden;
+}
 
 body,
 .question-header,
@@ -214,7 +215,6 @@ body,
     max-height: 100vh;
     overflow-y: auto;
     box-sizing: border-box;
-    font-family: "Inter", system-ui;
     color: var(--text-color);
 }
 
@@ -419,12 +419,12 @@ body,
 
 /* ===== START SCREEN STYLES ===== */
 .start-screen {
+    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    text-align: center;
 }
 
 .start-screen p {
@@ -446,5 +446,4 @@ body,
 
 .start-screen .team-names h2 {
     font-size: 5vh;
-}
 }
