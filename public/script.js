@@ -164,6 +164,7 @@ function renderHostView(gameState) {
     const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
     const isQuestionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
     const anyAnswerRevealed = currentQuestion.answers.some(answer => answer.revealed);
+    const allAnswersRevealed = currentQuestion.answers.every(answer => answer.revealed);
 
     hostInterface.innerHTML = `
         <div class="host-container">
@@ -178,7 +179,7 @@ function renderHostView(gameState) {
                     <p class="question-text">${currentQuestion.question}</p>
                     <div class="button-group">
                         <button class="btn secondary" onclick="prevQuestion()" ${!gameState.gameStarted || !isQuestionRevealed ? 'disabled' : ''}>Previous</button>
-                        <button class="btn secondary" onclick="nextQuestion()" ${!gameState.gameStarted || !isQuestionRevealed ? 'disabled' : ''}>Next</button>
+                        <button class="btn secondary" onclick="nextQuestion()" ${!gameState.gameStarted || !isQuestionRevealed || !allAnswersRevealed ? 'disabled' : ''}>Next</button>
                     </div>
                 </div>
             </div>
