@@ -163,37 +163,35 @@ function renderHostView(gameState) {
 
     hostInterface.innerHTML = `
         <div class="host-container">
-            ${!gameState.gameStarted ? `
-                <div class="section game-start-section">
-                    <h2 class="section-title">Start Game</h2>
-                    <div class="content-box">
-                        <button class="btn primary" onclick="startGame()">Start Game</button>
-                    </div>
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Question</h2>
+                    <button class="btn primary" onclick="revealQuestion()" ${isQuestionRevealed ? 'disabled' : ''}>
+                        ${isQuestionRevealed ? 'Revealed' : 'Reveal'}
+                    </button>
                 </div>
-            ` : ''}
-            
-            <div class="section question-section">
-                <h2 class="section-title">Current Question</h2>
                 <div class="content-box">
                     <p class="question-text">${currentQuestion.question}</p>
                     <div class="button-group">
                         <button class="btn secondary" onclick="prevQuestion()">Previous</button>
-                        <button class="btn primary" onclick="revealQuestion()" ${isQuestionRevealed ? 'disabled' : ''}>
-                            ${isQuestionRevealed ? 'Question Revealed' : 'Reveal Question'}
-                        </button>
                         <button class="btn secondary" onclick="nextQuestion()">Next</button>
                     </div>
                 </div>
             </div>
 
-            <div class="section answers-section">
-                <h2 class="section-title">Answers</h2>
-                <ul class="answer-list content-box">
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Answers</h2>
+                    <button class="btn primary" onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 ? 'disabled' : ''}>
+                        Mark Wrong (${gameState.wrongAnswers}/3)
+                    </button>
+                </div>
+                <ul class="answer-list">
                     ${currentQuestion.answers.map((answer, index) => `
                         <li class="answer-item">
                             <span class="answer-text">${answer.answer}</span>
                             <span class="answer-points">${answer.points}</span>
-                            <button class="btn ${answer.revealed ? 'disabled' : 'primary'}" 
+                            <button class="btn ${answer.revealed ? 'disabled' : 'secondary'}" 
                                     onclick="revealAnswer(${gameState.currentQuestionIndex}, ${index})" 
                                     ${answer.revealed ? 'disabled' : ''}>
                                 ${answer.revealed ? 'Revealed' : 'Reveal'}
@@ -203,40 +201,38 @@ function renderHostView(gameState) {
                 </ul>
             </div>
 
-            <div class="section team-controls">
-                <h2 class="section-title">Team Controls</h2>
-                <ul class="team-list content-box">
-                    ${[0, 1].map(teamIndex => `
-                        <li class="team-item">
-                            <div class="team-name-edit">
-                                <input type="text" class="input team-name-input" value="${gameState.teamNames[teamIndex]}" id="team${teamIndex+1}-name-input" />
-                                <button class="btn secondary" onclick="updateTeamName(${teamIndex}, document.getElementById('team${teamIndex+1}-name-input').value)">Update</button>
-                            </div>
-                            <div class="team-points">
-                                <input type="number" class="input points-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
-                                <button class="btn secondary" onclick="setManualPoints(${teamIndex})">Set Points</button>
-                            </div>
-                            <button class="btn ${gameState.assignedPoints[teamIndex] ? 'disabled' : 'primary'}" 
-                                    onclick="assignRevealedPoints(${teamIndex})"
-                                    ${gameState.assignedPoints[teamIndex] ? 'disabled' : ''}>
-                                ${gameState.assignedPoints[teamIndex] ? 'Assigned' : 'Assign Revealed'}
-                            </button>
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-
-            <div class="section game-controls">
-                <h2 class="section-title">Game Controls</h2>
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Controls</h2>
+                    <button class="btn primary" onclick="startGame()" ${gameState.gameStarted ? 'disabled' : ''}>
+                        ${gameState.gameStarted ? 'Game Started' : 'Start Game'}
+                    </button>
+                </div>
                 <div class="content-box">
-                    <div class="control-group">
-                        <label class="control-label">Wrong Answers:</label>
-                        <div class="button-group">
-                            <button class="btn ${gameState.wrongAnswers >= 3 ? 'disabled' : 'primary'}" 
-                                    onclick="markWrongAnswer()" ${gameState.wrongAnswers >= 3 ? 'disabled' : ''}>
-                                Mark Wrong (${gameState.wrongAnswers}/3)
-                            </button>
-                        </div>
+                    <div class="team-controls">
+                        ${[0, 1].map(teamIndex => `
+                            <div class="team-control">
+                                ${gameState.editingTeam === teamIndex ? `
+                                    <div class="team-name-edit">
+                                        <input type="text" class="input" value="${gameState.teamNames[teamIndex]}" id="team${teamIndex+1}-name-input" />
+                                        <button class="btn secondary" onclick="updateTeamName(${teamIndex}, document.getElementById('team${teamIndex+1}-name-input').value)">Save</button>
+                                        <button class="btn secondary" onclick="toggleEditTeamName(${teamIndex})">Cancel</button>
+                                    </div>
+                                ` : `
+                                    <div class="team-control-row">
+                                        <span class="team-name">${gameState.teamNames[teamIndex]}</span>
+                                        <button class="btn secondary" onclick="toggleEditTeamName(${teamIndex})">Edit</button>
+                                        <input type="number" class="input short-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
+                                        <button class="btn secondary" onclick="setManualPoints(${teamIndex})">Set</button>
+                                        <button class="btn ${gameState.assignedPoints[teamIndex] ? 'disabled' : 'secondary'} assign-revealed-btn" 
+                                                onclick="assignRevealedPoints(${teamIndex})"
+                                                ${gameState.assignedPoints[teamIndex] ? 'disabled' : ''}>
+                                            ${gameState.assignedPoints[teamIndex] ? 'Assigned' : 'Assign Revealed'}
+                                        </button>
+                                    </div>
+                                `}
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             </div>
@@ -244,9 +240,21 @@ function renderHostView(gameState) {
     `;
 }
 
-// Emit event to update team names
+// New function to toggle team name edit state
+function toggleEditTeamName(teamIndex) {
+    if (gameState.editingTeam === teamIndex) {
+        gameState.editingTeam = null;
+    } else {
+        gameState.editingTeam = teamIndex;
+    }
+    renderHostView(gameState);
+}
+
+// Update the updateTeamName function
 function updateTeamName(teamIndex, newName) {
     socket.emit('update-team-name', { teamIndex, newName });
+    gameState.editingTeam = null;
+    renderHostView(gameState);
 }
 
 // Function to assign revealed points

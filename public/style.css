@@ -208,6 +208,15 @@ body {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    max-height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    font-family: "Inter", system-ui;
+    color: var(--text-color);
+}
+
+.host-container * {
+    text-transform: none;
 }
 
 .section {
@@ -217,87 +226,89 @@ body {
     overflow: hidden;
 }
 
-.section-title {
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 15px 20px;
     background-color: var(--cell-bg-color);
-    color: var(--text-color);
-    font-size: 1.2rem;
-    margin: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
 }
 
 .content-box {
     padding: 20px;
 }
 
-.question-text {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-}
-
-.button-group {
-    display: flex;
-    gap: 10px;
-}
-
 .btn {
-    padding: 10px 15px;
-    border: none;
+    padding: 8px 12px;
+    border: 1px solid transparent;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    font-size: 1rem;
-    font-weight: 500;
-    text-transform: uppercase;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.5;
+    height: 36px; /* Set a fixed height */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn.primary {
-    background-color: #FF6B00;
+    background-color: var(--revealed-color);
     color: #FFFFFF;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.btn.primary:hover {
-    background-color: #FF8533;
+.btn.primary:hover:not(:disabled) {
+    background-color: #3A5AD1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn.secondary {
-    background-color: var(--cell-bg-color);
+    background-color: transparent;
     color: var(--text-color);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.btn.disabled {
-    background-color: var(--cell-bg-color);
-    color: var(--text-color);
-    opacity: 0.6;
+.btn.secondary:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    box-shadow: none;
+    background-color: #cccccc;
+    color: #666666;
+    border: 1px solid transparent;
 }
 
-.answer-list, .team-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.answer-item, .team-item {
+.team-controls {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.team-control {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 15px;
 }
 
-.answer-item:last-child, .team-item:last-child {
-    border-bottom: none;
-}
-
-.answer-text, .team-name-edit {
-    flex-grow: 1;
-    margin-right: 15px;
-}
-
-.answer-points, .team-points {
-    margin-right: 15px;
+.team-name-edit, .team-points {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .input {
@@ -306,93 +317,106 @@ body {
     border-radius: 4px;
     background-color: rgba(0, 0, 0, 0.2);
     color: var(--text-color);
+    font-size: 0.9rem;
+    flex-grow: 1;
+    min-width: 0;
+    transition: all 0.3s ease;
+}
+
+.input:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.input:focus:not(:disabled) {
+    outline: none;
+    border-color: var(--revealed-color);
+    box-shadow: 0 0 0 2px rgba(70, 105, 231, 0.2);
+}
+
+.input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.answer-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.answer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.answer-item:last-child {
+    border-bottom: none;
+}
+
+.answer-text {
+    flex-grow: 1;
+    margin-right: 15px;
+}
+
+.answer-points {
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.question-text {
+    margin-bottom: 40px;
+}
+
+.team-name-display, .team-name-edit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.team-name {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.assign-revealed-btn {
+    margin-left: auto;
+}
+
+.team-controls-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
 }
 
-.control-label {
-    display: block;
-    margin-bottom: 8px;
-}
-
-@media (max-width: 600px) {
-    .answer-item, .team-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .button-group {
-        flex-direction: column;
-    }
-
-    .btn {
-        width: 100%;
-    }
-}
-
-.start-screen {
+.assign-revealed-container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    text-align: center;
+    justify-content: flex-end;
 }
 
-.start-screen h1 {
-    font-size: 5rem;
-    margin-bottom: 2rem;
+.assign-revealed-btn {
+    margin-left: auto;
 }
 
-.start-screen .team-names {
+.team-control-row {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    gap: 10px;
 }
 
-.start-screen .team-names h2 {
-    font-size: 3rem;
+.short-input {
+    width: 60px;
 }
 
-.start-screen p {
-    font-size: 1.5rem;
+.assign-revealed-btn {
+    margin-left: auto;
 }
-
-.empty-board {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 90vh;
-    text-align: center;
-}
-
-.empty-board h2 {
-    font-size: 3rem;
-    margin-bottom: 2rem;
-}
-
-.empty-board .team-names {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-}
-
-.empty-board .team-names h3 {
-    font-size: 2rem;
-}
-
-/* ... existing styles ... */
-
-.answer-cell.empty {
-    background-color: var(--cell-bg-color);
-    box-shadow: 
-        inset calc(-1 * var(--shadow-size)) calc(-1 * var(--shadow-size)) var(--shadow-size) rgba(69, 99, 208, 0.8),
-        inset var(--shadow-size) var(--shadow-size) var(--shadow-size) rgba(0, 0, 0, 0.8);
-}
-
-/* ... rest of the styles ... */
-
