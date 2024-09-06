@@ -3,6 +3,7 @@ let gameState = {};  // Global variable to store the game state
 const socket = io();
 
 const wrongSound = new Audio('/sounds/wrong.mp3');
+const correctSound = new Audio('/sounds/correct.mp3');
 
 socket.on('connect', () => {
     console.log('Connected to the server with Socket.io');
@@ -294,6 +295,7 @@ function setManualPoints(teamIndex) {
 
 function revealAnswer(questionIndex, answerIndex) {
     socket.emit('reveal-answer', { questionIndex, answerIndex });
+    correctSound.play();
 }
 
 // Function to mark wrong answer, restricted to a max of 3 strikes
