@@ -181,7 +181,7 @@ function renderHostView(gameState) {
             <div class="section">
                 <div class="section-header">
                     <h2 class="section-title">Answers</h2>
-                    <button class="btn primary" onclick="actions.markWrongAnswer()" ${gameState.wrongAnswers >= 3 || !isQuestionRevealed ? 'disabled' : ''}>
+                    <button class="btn primary" onclick="actions.markWrongAnswer()" ${!isQuestionRevealed ? 'disabled' : ''}>
                         Mark Wrong (${gameState.wrongAnswers}/3)
                     </button>
                 </div>
@@ -278,8 +278,8 @@ const actions = {
     markWrongAnswer: () => {
         if (gameState.wrongAnswers < 3) {
             socket.emit('wrong-answer');
-            sounds.wrong.play();
         }
+        sounds.wrong.play();
     },
     changeQuestion: (direction) => socket.emit('change-question', { direction }),
     resetWrongAnswers: () => socket.emit('reset-wrong-answers'),
