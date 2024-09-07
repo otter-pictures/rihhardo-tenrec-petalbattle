@@ -19,6 +19,7 @@ let gameState = {
     gameStarted: false,  // New property to track if the game has started
     questionRevealed: false,  // New property to track if the question is revealed
     revealedQuestions: [],  // New array to track which questions have been revealed
+    gameEnded: false,  // New property to track if the game has ended
 };
 
 // Refactor the loadQuestions function to use async/await
@@ -155,6 +156,14 @@ io.on('connection', (socket) => {
             io.emit('game-update', gameState);
         } else {
             console.log('Cannot change question: game not started or current question not revealed');
+        }
+    });
+
+    // New event handler for ending the game
+    socket.on('end-game', () => {
+        if (gameState.gameStarted && gameState.currentQuestionIndex === gameState.questions.length - 1) {
+            gameState.gameEnded = true;
+            io.emit('game-update', gameState);
         }
     });
 
