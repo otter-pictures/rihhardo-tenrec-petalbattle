@@ -41,7 +41,7 @@ function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
             <p>Rihhardo-Tenrec-Tulbilahing esitleb:</p>
-            <h1>Joomamäng</h1>
+            <h1>Rooside sõda</h1>
             <div class="team-names">
                 <h2>${gameState.teamNames[0]}</h2>
                 <h2>VS</h2>
@@ -372,18 +372,25 @@ const actions = {
 function setupBackgroundAnimation() {
     const body = document.body;
     if (interfaces.audience) {
-        body.style.backgroundImage = 'url("/images/stripe.png")';
-        body.style.backgroundRepeat = 'repeat';
-        body.style.backgroundSize = '1px 16px';
+        body.style.backgroundImage = `
+            url("/images/stripe.png"),
+            url("/images/noise.png")
+        `;
+        body.style.backgroundRepeat = 'repeat, repeat';
+        body.style.backgroundSize = '1px 16px, auto';
+        body.style.backgroundBlendMode = 'normal, overlay';
         let offset = 0;
         (function animate() {
             offset = (offset + 0.25) % 16; // Slow down the speed
-            body.style.backgroundPosition = `0 ${offset}px`;
+            body.style.backgroundPosition = `0 ${offset}px, 0 0`;
             requestAnimationFrame(animate);
         })();
     } else if (interfaces.host) {
         body.style.backgroundColor = 'var(--main-bg-color)';
-        body.style.backgroundImage = 'none';
+        body.style.backgroundImage = 'url("/images/noise.png")';
+        body.style.backgroundRepeat = 'repeat';
+        body.style.backgroundSize = 'auto';
+        body.style.backgroundBlendMode = 'overlay';
     }
 }
 
