@@ -448,3 +448,34 @@ body,
 .start-screen .team-names h2 {
     font-size: 5vh;
 }
+
+.game-over-screen {
+    text-align: center;
+    padding: 2rem;
+}
+
+.score-table {
+    margin: 2rem auto;
+    font-size: 1.5rem;
+    border-collapse: collapse;
+}
+
+.score-table td {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+}
+
+@keyframes revealAnswer {
+    0% {
+        transform: rotateX(90deg);
+        opacity: 0;
+    }
+    100% {
+        transform: rotateX(0deg);
+        opacity: 1;
+    }
+}
+
+.answer-cell.animate-reveal {
+    animation: revealAnswer 0.5s ease-out forwards;
+}

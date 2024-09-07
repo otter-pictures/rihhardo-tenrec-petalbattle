@@ -20,10 +20,19 @@ function renderView(gameState) {
 }
 
 function renderAudienceView(gameState) {
-    const { gameStarted, revealedQuestions, currentQuestionIndex } = gameState;
-    const renderFunction = !gameStarted ? renderStartScreen :
-                           !revealedQuestions.includes(currentQuestionIndex) ? renderEmptyBoard :
-                           renderGameBoard;
+    const { gameStarted, revealedQuestions, currentQuestionIndex, gameEnded } = gameState;
+    let renderFunction;
+    
+    if (!gameStarted) {
+        renderFunction = renderStartScreen;
+    } else if (gameEnded) {
+        renderFunction = renderGameOverScreen;
+    } else if (!revealedQuestions.includes(currentQuestionIndex)) {
+        renderFunction = renderEmptyBoard;
+    } else {
+        renderFunction = renderGameBoard;
+    }
+    
     interfaces.audience.innerHTML = renderFunction(gameState);
 }
 
@@ -32,7 +41,7 @@ function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
             <p>Rihhardo-Tenrec-Tulbilahing esitleb:</p>
-            <h1>Joomamäng</h1>
+            <h1>Rooside sõda</h1>
             <div class="team-names">
                 <h2>${gameState.teamNames[0]}</h2>
                 <h2>VS</h2>
@@ -105,7 +114,7 @@ function renderAnswerCell(answer, sequenceNumber) {
     const sequenceSpan = answer.revealed ? '' : `<span class="sequence">${sequenceNumber}</span>`;
 
     return `
-        <div class="cell answer-cell ${cellClass}">
+        <div class="cell answer-cell ${cellClass} ${answer.justRevealed ? 'animate-reveal' : ''}">
             ${sequenceSpan}
             <span class="text">${answerText}</span>
             <span class="points">${pointsText}</span>
@@ -135,9 +144,24 @@ function renderStrikes(wrongAnswers) {
     `).join('');
 }
 
+function renderGameOverScreen(gameState) {
+    const winner = gameState.teamScores[0] > gameState.teamScores[1] ? 0 : 1;
+    return `
+        <div class="start-screen">
+            <p>Mäng on läbi!</p>
+            <h1>Võitja on ${gameState.teamNames[winner]}!</h1>
+            <div class="team-names">
+                <h2>${gameState.teamScores[0]}</h2>
+                <h2>VS</h2>
+                <h2>${gameState.teamScores[1]}</h2>
+            </div>
+        </div>
+    `;
+}
+
 // Render Host Interface
 function renderHostView(gameState) {
-    const { currentQuestionIndex, questions, gameStarted, revealedQuestions, wrongAnswers, teamNames, assignedPoints } = gameState;
+    const { currentQuestionIndex, questions, gameStarted, revealedQuestions, wrongAnswers, teamNames, assignedPoints, gameEnded } = gameState;
     const currentQuestion = questions[currentQuestionIndex];
     const isQuestionRevealed = revealedQuestions.includes(currentQuestionIndex);
     const anyAnswerRevealed = currentQuestion.answers.some(answer => answer.revealed);
@@ -147,15 +171,35 @@ function renderHostView(gameState) {
 
     interfaces.host.innerHTML = `
         <div class="host-container">
-            ${renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed)}
-            ${renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers, currentQuestionIndex)}
-            ${renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswerRevealed)}
+            ${renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded)}
+            ${renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers, currentQuestionIndex, gameEnded)}
+            ${renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswerRevealed, gameEnded)}
         </div>
     `;
 }
 
 // Helper functions for renderHostView
-function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed) {
+function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded) {
+    if (gameEnded) {
+        return `
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Game Over</h2>
+                    <button class="btn primary" onclick="actions.revealQuestion()" disabled>
+                        ${isQuestionRevealed ? 'Revealed' : 'Reveal'}
+                    </button>
+                </div>
+                <div class="content-box">
+                    <p class="question-text">${currentQuestion.question}</p>
+                    <div class="button-group">
+                        <button class="btn secondary" onclick="actions.changeQuestion('prev')" ${isFirstQuestion ? 'disabled' : ''}>Previous</button>
+                        <button class="btn secondary" onclick="actions.changeQuestion('next')" ${isLastQuestion ? 'disabled' : ''}>Next</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     return `
         <div class="section">
             <div class="section-header">
@@ -169,18 +213,19 @@ function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted,
                 <div class="button-group">
                     <button class="btn secondary" onclick="actions.changeQuestion('prev')" ${!gameStarted || !isQuestionRevealed || isFirstQuestion ? 'disabled' : ''}>Previous</button>
                     <button class="btn secondary" onclick="actions.changeQuestion('next')" ${!gameStarted || !isQuestionRevealed || !allAnswersRevealed || isLastQuestion ? 'disabled' : ''}>Next</button>
+                    <button class="btn primary" onclick="actions.endGame()" ${!isLastQuestion || !allAnswersRevealed ? 'disabled' : ''}>End Game</button>
                 </div>
             </div>
         </div>
     `;
 }
 
-function renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers, currentQuestionIndex) {
+function renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers, currentQuestionIndex, gameEnded) {
     return `
         <div class="section">
             <div class="section-header">
                 <h2 class="section-title">Answers</h2>
-                <button class="btn primary" onclick="actions.markWrongAnswer()" ${!isQuestionRevealed ? 'disabled' : ''}>
+                <button class="btn primary" onclick="actions.markWrongAnswer()" ${!isQuestionRevealed || gameEnded ? 'disabled' : ''}>
                     Mark Wrong (${wrongAnswers}/3)
                 </button>
             </div>
@@ -191,7 +236,7 @@ function renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers,
                         <span class="answer-points">${answer.points}</span>
                         <button class="btn ${answer.revealed ? 'disabled' : 'secondary'}" 
                                 onclick="actions.revealAnswer(${currentQuestionIndex}, ${index})" 
-                                ${answer.revealed || !isQuestionRevealed ? 'disabled' : ''}>
+                                ${answer.revealed || !isQuestionRevealed || gameEnded ? 'disabled' : ''}>
                             ${answer.revealed ? 'Revealed' : 'Reveal'}
                         </button>
                     </li>
@@ -201,7 +246,7 @@ function renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers,
     `;
 }
 
-function renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswerRevealed) {
+function renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswerRevealed, gameEnded) {
     return `
         <div class="section">
             <div class="section-header">
@@ -212,17 +257,17 @@ function renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswer
             </div>
             <div class="content-box">
                 <div class="team-controls">
-                    ${[0, 1].map(teamIndex => renderTeamControl(teamIndex, teamNames[teamIndex], assignedPoints[teamIndex], anyAnswerRevealed)).join('')}
+                    ${[0, 1].map(teamIndex => renderTeamControl(teamIndex, teamNames[teamIndex], assignedPoints[teamIndex], anyAnswerRevealed, gameEnded)).join('')}
                 </div>
             </div>
         </div>
     `;
 }
 
-function renderTeamControl(teamIndex, teamName, assignedPoints, anyAnswerRevealed) {
+function renderTeamControl(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded) {
     return `
         <div class="team-control">
-            ${gameState.editingTeam === teamIndex ? renderTeamNameEdit(teamIndex, teamName) : renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerRevealed)}
+            ${gameState.editingTeam === teamIndex ? renderTeamNameEdit(teamIndex, teamName) : renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded)}
         </div>
     `;
 }
@@ -237,16 +282,16 @@ function renderTeamNameEdit(teamIndex, teamName) {
     `;
 }
 
-function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerRevealed) {
+function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded) {
     return `
         <div class="team-control-row">
             <span class="team-name">${teamName}</span>
             <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Edit</button>
             <input type="number" class="input short-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
             <button class="btn secondary" onclick="actions.setManualPoints(${teamIndex})">Set</button>
-            <button class="btn ${assignedPoints || !anyAnswerRevealed ? 'disabled' : 'secondary'} assign-revealed-btn" 
+            <button class="btn ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : 'secondary'} assign-revealed-btn" 
                     onclick="actions.assignRevealedPoints(${teamIndex})"
-                    ${assignedPoints || !anyAnswerRevealed ? 'disabled' : ''}>
+                    ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : ''}>
                 ${assignedPoints ? 'Assigned' : 'Assign Revealed'}
             </button>
         </div>
@@ -255,6 +300,21 @@ function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerReve
 
 // Event handlers
 function handleGameUpdate(updatedGameState) {
+    // Check for newly revealed answers
+    if (gameState.questions && updatedGameState.questions) {
+        updatedGameState.questions.forEach((question, qIndex) => {
+            question.answers.forEach((answer, aIndex) => {
+                if (answer.revealed && (!gameState.questions[qIndex] || !gameState.questions[qIndex].answers[aIndex].revealed)) {
+                    answer.justRevealed = true;
+                    setTimeout(() => {
+                        delete updatedGameState.questions[qIndex].answers[aIndex].justRevealed;
+                        renderView(updatedGameState);
+                    }, 1000); // Remove the animation class after 1 second
+                }
+            });
+        });
+    }
+
     Object.assign(gameState, updatedGameState);
     console.log('Game update received:', gameState);
     renderView(gameState);
@@ -295,10 +355,17 @@ const actions = {
         }
         sounds.wrong.play();
     },
-    changeQuestion: (direction) => socket.emit('change-question', { direction }),
+    changeQuestion: (direction) => {
+        socket.emit('change-question', { direction });
+        // Force update the audience view
+        socket.emit('force-update-audience');
+    },
     resetWrongAnswers: () => socket.emit('reset-wrong-answers'),
     startGame: () => socket.emit('start-game'),
-    revealQuestion: () => socket.emit('reveal-question')
+    revealQuestion: () => socket.emit('reveal-question'),
+    endGame: () => {
+        socket.emit('end-game');
+    },
 };
 
 // Background animation
@@ -306,24 +373,24 @@ function setupBackgroundAnimation() {
     const body = document.body;
     if (interfaces.audience) {
         body.style.backgroundImage = `
-            linear-gradient(
-                0deg,
-                var(--main-bg-color) 0%,
-                var(--main-bg-color) 50%,
-                var(--stripe-color-1) 50%,
-                var(--stripe-color-1) 100%
-            )
+            url("/images/stripe.png"),
+            url("/images/noise.png")
         `;
-        body.style.backgroundSize = '100% 16px';
+        body.style.backgroundRepeat = 'repeat, repeat';
+        body.style.backgroundSize = '1px 16px, auto';
+        body.style.backgroundBlendMode = 'normal, overlay';
         let offset = 0;
         (function animate() {
-            offset = (offset + 0.5) % 16;
-            body.style.backgroundPosition = `0 ${offset}px`;
+            offset = (offset + 0.25) % 16; // Slow down the speed
+            body.style.backgroundPosition = `0 ${offset}px, 0 0`;
             requestAnimationFrame(animate);
         })();
     } else if (interfaces.host) {
         body.style.backgroundColor = 'var(--main-bg-color)';
-        body.style.backgroundImage = 'none';
+        body.style.backgroundImage = 'url("/images/noise.png")';
+        body.style.backgroundRepeat = 'repeat';
+        body.style.backgroundSize = 'auto';
+        body.style.backgroundBlendMode = 'overlay';
     }
 }
 
