@@ -5,5 +5,5 @@ A family feud style game that you run locally.
 ## Setup
 
 ```
-node backenc/server.js
+node backend/server.js
 ```
