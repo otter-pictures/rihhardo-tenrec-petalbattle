@@ -40,10 +40,17 @@ function renderAudienceView(gameState) {
 function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
-            <div class="logo-container">
-                <span class="presenter">Rihhardo-Tenrec-Tulbilahing esitleb:</span>
-                <h1 class="game-title">Rooside<br>sõda</h1>
+            <div class="presenter">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
+            <div class="logo-card">
+                <div class="ellipse-container">
+                    <img src="/images/ellipse.svg" alt="Ellipse background" class="ellipse-svg">
+                    <div class="title-container">
+                        <div class="title-primary" data-text="Rooside">Rooside</div>
+                        <div class="title-primary" data-text="sõda">sõda</div>
+                    </div>
+                </div>
             </div>
+            <div class="copyright">©2024</div>
         </div>
     `;
 }
@@ -145,12 +152,16 @@ function renderGameOverScreen(gameState) {
     const winner = gameState.teamScores[0] > gameState.teamScores[1] ? 0 : 1;
     return `
         <div class="start-screen">
-            <div class="logo-container">
-                <span class="presenter">Võitja on</span>
-                <h1 class="game-title">${gameState.teamNames[winner]}!</h1>
-                <div class="presenter">${gameState.teamNames[0]}: ${gameState.teamScores[0]}</div>
-                <div class="presenter">${gameState.teamNames[1]}: ${gameState.teamScores[1]}</div>
+            <div class="presenter">Võitja on:</div>
+            <div class="logo-card">
+                <div class="ellipse-container">
+                    <div class="title-container">
+                        <div class="title-primary">${gameState.teamNames[winner]}!</div>
+                    </div>
+                </div>
             </div>
+            <div class="copyright">${gameState.teamNames[0]}: ${gameState.teamScores[0]}</div>
+            <div class="copyright">${gameState.teamNames[1]}: ${gameState.teamScores[1]}</div>
         </div>
     `;
 }
@@ -294,9 +305,7 @@ function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerReve
     `;
 }
 
-// Event handlers
 function handleGameUpdate(updatedGameState) {
-    // Check for newly revealed answers
     if (gameState.questions && updatedGameState.questions) {
         updatedGameState.questions.forEach((question, qIndex) => {
             question.answers.forEach((answer, aIndex) => {
@@ -305,7 +314,7 @@ function handleGameUpdate(updatedGameState) {
                     setTimeout(() => {
                         delete updatedGameState.questions[qIndex].answers[aIndex].justRevealed;
                         renderView(updatedGameState);
-                    }, 1000); // Remove the animation class after 1 second
+                    }, 1000);
                 }
             });
         });
@@ -364,7 +373,6 @@ const actions = {
     },
 };
 
-// Background animation
 function setupBackgroundAnimation() {
     const body = document.body;
     if (interfaces.audience) {
@@ -377,7 +385,7 @@ function setupBackgroundAnimation() {
         body.style.backgroundBlendMode = 'normal, overlay';
         let offset = 0;
         (function animate() {
-            offset = (offset + 0.25) % 16; // Slow down the speed
+            offset = (offset + 0.25) % 16;
             body.style.backgroundPosition = `0 ${offset}px, 0 0`;
             requestAnimationFrame(animate);
         })();
@@ -392,5 +400,33 @@ function setupBackgroundAnimation() {
 
 document.addEventListener('DOMContentLoaded', setupBackgroundAnimation);
 
-// Expose necessary functions to global scope
 window.actions = actions;
+
+function fitQuestionToOneLine() {
+    const questionHeader = document.querySelector('.question-header');
+    if (!questionHeader) return;
+
+    const container = questionHeader.parentElement;
+    const maxWidth = container.clientWidth;
+
+    // Start with a large font size and decrease until it fits
+    let fontSize = 50; // Starting font size in pixels
+    questionHeader.style.fontSize = `${fontSize}px`;
+
+    while (questionHeader.scrollWidth > maxWidth && fontSize > 10) {
+        fontSize--;
+        questionHeader.style.fontSize = `${fontSize}px`;
+    }
+}
+
+// Call this function after rendering the question
+function renderQuestion(question) {
+    const questionHeader = document.querySelector('.question-header');
+    if (questionHeader) {
+        questionHeader.textContent = question;
+        fitQuestionToOneLine();
+    }
+}
+
+// Also call this on window resize
+window.addEventListener('resize', fitQuestionToOneLine);
