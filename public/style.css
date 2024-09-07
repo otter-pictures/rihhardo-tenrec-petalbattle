@@ -487,11 +487,6 @@ body,
     -webkit-text-fill-color: transparent;
 }
 
-.game-over-screen {
-    text-align: center;
-    padding: 2rem;
-}
-
 .score-table {
     margin: 2rem auto;
     font-size: 1.5rem;
