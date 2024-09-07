@@ -42,11 +42,6 @@ function renderStartScreen(gameState) {
         <div class="start-screen">
             <p>Rihhardo-Tenrec-Tulbilahing esitleb:</p>
             <h1>Rooside sõda</h1>
-            <div class="team-names">
-                <h2>${gameState.teamNames[0]}</h2>
-                <h2>VS</h2>
-                <h2>${gameState.teamNames[1]}</h2>
-            </div>
         </div>
     `;
 }

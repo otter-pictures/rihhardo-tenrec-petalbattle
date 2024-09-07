@@ -438,17 +438,6 @@ body,
     margin-bottom: 4vh;
 }
 
-.start-screen .team-names {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 3vh;
-}
-
-.start-screen .team-names h2 {
-    font-size: 5vh;
-}
-
 .game-over-screen {
     text-align: center;
     padding: 2rem;
