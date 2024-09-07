@@ -357,19 +357,12 @@ const actions = {
 function setupBackgroundAnimation() {
     const body = document.body;
     if (interfaces.audience) {
-        body.style.backgroundImage = `
-            linear-gradient(
-                0deg,
-                var(--main-bg-color) 0%,
-                var(--main-bg-color) 50%,
-                var(--stripe-color-1) 50%,
-                var(--stripe-color-1) 100%
-            )
-        `;
-        body.style.backgroundSize = '100% 16px';
+        body.style.backgroundImage = 'url("/images/stripe.png")';
+        body.style.backgroundRepeat = 'repeat';
+        body.style.backgroundSize = '1px 16px';
         let offset = 0;
         (function animate() {
-            offset = (offset + 0.5) % 16;
+            offset = (offset + 0.25) % 16; // Slow down the speed
             body.style.backgroundPosition = `0 ${offset}px`;
             requestAnimationFrame(animate);
         })();
