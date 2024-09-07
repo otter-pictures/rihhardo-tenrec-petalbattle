@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Pacifico&display=swap');
+
 /* ===== VARIABLES ===== */
 :root {
   /* Colors */
@@ -49,7 +51,7 @@ body,
 .strike {
   font-family: "Inter", system-ui;
   font-optical-sizing: auto;
-  font-weight: 500;
+  font-weight: 600;
   font-style: normal;
   text-transform: uppercase;
 }
@@ -145,6 +147,7 @@ body,
     display: flex;
     justify-content: center;
     align-items: center;
+    font-weight: 900;
     font-size: var(--cell-font-size);
 }
 
@@ -163,10 +166,6 @@ body,
     padding-right: 1vh;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.points {
-    font-weight: 400;
 }
 
 /* ===== TEAM NAMES AND SCORES ===== */
@@ -241,7 +240,6 @@ body,
 .section-title {
     margin: 0;
     font-size: 1.2rem;
-    font-weight: 500;
 }
 
 .content-box {
@@ -256,7 +254,6 @@ body,
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.9rem;
-    font-weight: 400;
     line-height: 1.5;
     height: 36px;
     display: inline-flex;
@@ -353,7 +350,6 @@ body,
 
 .team-name {
     font-size: 1rem;
-    font-weight: 500;
 }
 
 .team-controls-group {
@@ -400,11 +396,12 @@ body,
 .answer-text {
     flex-grow: 1;
     margin-right: 15px;
+    font-weight: 400;
 }
 
 .answer-points {
     margin-right: 15px;
-    font-weight: bold;
+    font-weight: 400;
 }
 
 /* ===== MISC ===== */
@@ -416,26 +413,46 @@ body,
 
 .question-text {
     margin-bottom: 40px;
+    font-weight: 400;
 }
 
 /* ===== START SCREEN STYLES ===== */
 .start-screen {
-    text-align: center;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
+    position: relative;
+    z-index: 2;
 }
 
-.start-screen p {
-    font-size: 3vh;
-    margin-bottom: 2vh;
+.logo-container {
+    text-align: center;
+    position: relative;
 }
 
-.start-screen h1 {
-    font-size: 8vh;
-    margin-bottom: 4vh;
+.presenter {
+    font-family: 'Pacifico', cursive;
+    color: yellow;
+    font-size: 40px;
+    display: block;
+    text-transform: none;
+
+}
+
+.game-title {
+    font-family: 'Cinzel', serif;
+    font-size: 140px;
+    color: #f4b042;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+    
+    /* Creating the 3D effect */
+    text-shadow: 3px 3px 0 #d58e1f,
+                 6px 6px 0 #af6a14,
+                 9px 9px 0 #844b0d;
 }
 
 .game-over-screen {

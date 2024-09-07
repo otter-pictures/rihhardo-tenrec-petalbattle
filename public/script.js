@@ -40,8 +40,10 @@ function renderAudienceView(gameState) {
 function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
-            <p>Rihhardo-Tenrec-Tulbilahing esitleb:</p>
-            <h1>Rooside sõda</h1>
+            <div class="logo-container">
+                <span class="presenter">Rihhardo-Tenrec-Tulbilahing esitleb:</span>
+                <h1 class="game-title">Rooside<br>sõda</h1>
+            </div>
         </div>
     `;
 }
@@ -143,12 +145,11 @@ function renderGameOverScreen(gameState) {
     const winner = gameState.teamScores[0] > gameState.teamScores[1] ? 0 : 1;
     return `
         <div class="start-screen">
-            <p>Mäng on läbi!</p>
-            <h1>Võitja on ${gameState.teamNames[winner]}!</h1>
-            <div class="team-names">
-                <h2>${gameState.teamScores[0]}</h2>
-                <h2>VS</h2>
-                <h2>${gameState.teamScores[1]}</h2>
+            <div class="logo-container">
+                <span class="presenter">Võitja on</span>
+                <h1 class="game-title">${gameState.teamNames[winner]}!</h1>
+                <div class="presenter">${gameState.teamNames[0]}: ${gameState.teamScores[0]}</div>
+                <div class="presenter">${gameState.teamNames[1]}: ${gameState.teamScores[1]}</div>
             </div>
         </div>
     `;
