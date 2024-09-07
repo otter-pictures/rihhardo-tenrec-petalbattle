@@ -114,7 +114,7 @@ function renderAnswerCell(answer, sequenceNumber) {
     const sequenceSpan = answer.revealed ? '' : `<span class="sequence">${sequenceNumber}</span>`;
 
     return `
-        <div class="cell answer-cell ${cellClass}">
+        <div class="cell answer-cell ${cellClass} ${answer.justRevealed ? 'animate-reveal' : ''}">
             ${sequenceSpan}
             <span class="text">${answerText}</span>
             <span class="points">${pointsText}</span>
@@ -300,6 +300,21 @@ function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerReve
 
 // Event handlers
 function handleGameUpdate(updatedGameState) {
+    // Check for newly revealed answers
+    if (gameState.questions && updatedGameState.questions) {
+        updatedGameState.questions.forEach((question, qIndex) => {
+            question.answers.forEach((answer, aIndex) => {
+                if (answer.revealed && (!gameState.questions[qIndex] || !gameState.questions[qIndex].answers[aIndex].revealed)) {
+                    answer.justRevealed = true;
+                    setTimeout(() => {
+                        delete updatedGameState.questions[qIndex].answers[aIndex].justRevealed;
+                        renderView(updatedGameState);
+                    }, 1000); // Remove the animation class after 1 second
+                }
+            });
+        });
+    }
+
     Object.assign(gameState, updatedGameState);
     console.log('Game update received:', gameState);
     renderView(gameState);

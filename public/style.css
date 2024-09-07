@@ -464,3 +464,18 @@ body,
     padding: 0.5rem 1rem;
     border: 1px solid #ccc;
 }
+
+@keyframes revealAnswer {
+    0% {
+        transform: rotateX(90deg);
+        opacity: 0;
+    }
+    100% {
+        transform: rotateX(0deg);
+        opacity: 1;
+    }
+}
+
+.answer-cell.animate-reveal {
+    animation: revealAnswer 0.5s ease-out forwards;
+}
