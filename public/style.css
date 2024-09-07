@@ -65,12 +65,11 @@ body,
 .audience-container {
     display: grid;
     grid-template-rows: auto 1fr auto;
-    height: 100vh; /* Added max-height */
     position: relative;
     z-index: 1;
-    padding: 5vh 5vh; /* Changed to padding top and bottom, fits Age Tv per last test */
-    overflow-y: auto;
-    box-sizing: border-box;
+    margin-left: 4%;
+    margin-right: 4%;
+    justify-content: center;
 }
 
 .gameboard {
@@ -94,14 +93,13 @@ body,
 
 /* ===== QUESTION HEADER ===== */
 .question-header {
-    align-self: end;
+    align-self: center;
     text-align: center;
     font-size: 5vh; /* Starting font size */
     line-height: 1.2;
     transition: opacity 0.3s ease;
     white-space: nowrap; /* Prevent wrapping */
     overflow: hidden; /* Hide overflow */
-    width: 100%; /* Ensure it takes full width */
     padding-top: 2vh; /* Add some horizontal padding */
     box-sizing: border-box; /* Include padding in width calculation */
 }
