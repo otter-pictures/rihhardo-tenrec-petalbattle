@@ -1,7 +1,7 @@
 const socket = io();
 const gameState = {};
 const sounds = {
-    wrong: new Audio('/sounds/wrong.mp3'),
+    wrong: Array.from({length: 10}, (_, i) => new Audio(`/sounds/wrong-${i+1}.mp3`)),
     correct: new Audio('/sounds/correct.mp3')
 };
 const interfaces = {
@@ -362,7 +362,8 @@ const actions = {
         if (gameState.wrongAnswers < 3) {
             socket.emit('wrong-answer');
         }
-        sounds.wrong.play();
+        const randomIndex = Math.floor(Math.random() * sounds.wrong.length);
+        sounds.wrong[randomIndex].play();
     },
     changeQuestion: (direction) => {
         socket.emit('change-question', { direction });
