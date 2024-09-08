@@ -41,7 +41,7 @@ function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
             <div class="title-secondary">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
-            <div class="ellipse-container">
+            <div class="presentation">
                 <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image pop-animation">
             </div>
             <div class="title-secondary">©2024</div>
@@ -148,15 +148,13 @@ function renderGameOverScreen(gameState) {
     return `
         <div class="start-screen">
             <div class="title-secondary">Võitja on:</div>
-            <div class="logo-card">
-                <div class="ellipse-container">
-                    <div class="title-container">
-                        <div class="title-primary">${gameState.teamNames[winner]}!</div>
-                    </div>
-                </div>
+            <div class="presentation">
+                <div class="title-primary pop-animation">${gameState.teamNames[winner]}!</div>
             </div>
-            <div class="title-secondary">${gameState.teamNames[0]}: ${gameState.teamScores[0]}</div>
-            <div class="title-secondary">${gameState.teamNames[1]}: ${gameState.teamScores[1]}</div>
+            <div class="scores-container">
+                <div class="title-secondary">${gameState.teamNames[0]} - ${gameState.teamScores[0]}</div>
+                <div class="title-secondary">${gameState.teamNames[1]} - ${gameState.teamScores[1]}</div>
+            </div>
         </div>
     `;
 }

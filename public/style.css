@@ -416,11 +416,7 @@ body {
     letter-spacing: -4.8px;
     text-align: center;
     text-transform: none;
-}
-
-.score-table td {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
+    color: var(--sequence-text-color);
 }
 
 @keyframes revealAnswer {
