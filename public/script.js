@@ -65,7 +65,7 @@ function renderAudienceView(gameState) {
     }
     
     interfaces.audience.innerHTML = `
-        ${!audioPermissionGranted ? '<button class="btn secondary audio-permission-btn">Enable Sound</button>' : ''}
+        ${!audioPermissionGranted ? '<button class="btn secondary audio-permission-btn">Enable sound</button>' : ''}
         ${renderFunction(gameState)}
     `;
     
