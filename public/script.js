@@ -56,10 +56,11 @@ function renderStartScreen(gameState) {
 }
 
 function renderEmptyBoard(gameState) {
+    const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
     return `
         <div class="audience-container">
             <div class="question-header hidden">
-                <h2>Get ready for the next question!</h2>
+                ${currentQuestion.question}
             </div>
             <div class="gameboard">
                 ${renderEmptyRows()}
@@ -88,7 +89,7 @@ function renderGameBoard(gameState) {
     return `
         <div class="audience-container">
             <div class="question-header">
-                <h2>${currentQuestion.question}</h2>
+                ${currentQuestion.question}
             </div>
             <div class="gameboard">
                 ${renderAnswerRows(currentQuestion)}
@@ -404,31 +405,10 @@ document.addEventListener('DOMContentLoaded', setupBackgroundAnimation);
 
 window.actions = actions;
 
-function fitQuestionToOneLine() {
-    const questionHeader = document.querySelector('.question-header');
-    if (!questionHeader) return;
-
-    const container = questionHeader.parentElement;
-    const maxWidth = container.clientWidth;
-
-    // Start with a large font size and decrease until it fits
-    let fontSize = 50; // Starting font size in pixels
-    questionHeader.style.fontSize = `${fontSize}px`;
-
-    while (questionHeader.scrollWidth > maxWidth && fontSize > 10) {
-        fontSize--;
-        questionHeader.style.fontSize = `${fontSize}px`;
-    }
-}
-
-// Call this function after rendering the question
+// Simplify the renderQuestion function
 function renderQuestion(question) {
     const questionHeader = document.querySelector('.question-header');
     if (questionHeader) {
         questionHeader.textContent = question;
-        fitQuestionToOneLine();
     }
 }
-
-// Also call this on window resize
-window.addEventListener('resize', fitQuestionToOneLine);
