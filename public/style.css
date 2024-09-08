@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Faster+One&family=Asset&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Faster+One&family=Asset&family=Inter:wght@100..900&display=swap');
+@font-face {
+    font-family: 'Helvetica Neue Condensed';
+    src: url('/fonts/HelveticaNeueCondensed-Bold.ttf');
+  }
 
 /* ===== VARIABLES ===== */
 :root {
@@ -10,7 +14,7 @@
   --revealed-text-color: #ffffff;
   --strike-color: #dc3545;
   --sequence-bg-color: #FFFFFF;
-  --sequence-text-color: #001E8B;
+  --sequence-text-color: #FFD603;
   --stripe-color-1: rgba(70, 105, 231, 0.05);
   --border-color: rgba(255, 255, 255, 0.1);
   --input-bg-color: rgba(0, 0, 0, 0.2);
@@ -48,11 +52,9 @@ body,
 .team-name,
 .team-score,
 .strike {
-  font-family: "Inter", system-ui;
+  font-family: "Helvetica Neue Condensed", "Inter", system-ui;
   font-optical-sizing: auto;
-  font-weight: 600;
   font-style: normal;
-  text-transform: uppercase;
 }
 
 @keyframes scrollStripes {
@@ -133,15 +135,12 @@ body,
 }
 
 .sequence {
-    background-color: var(--sequence-bg-color);
     color: var(--sequence-text-color);
-    border-radius: 50%;
     width: 7vh;
     height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-weight: 900;
     font-size: var(--cell-font-size);
 }
 
@@ -211,6 +210,7 @@ body,
 }
 
 .section {
+    font-family: "Inter", system-ui;
     margin-bottom: 20px;
     background-color: var(--cell-bg-color);
     border-radius: 8px;

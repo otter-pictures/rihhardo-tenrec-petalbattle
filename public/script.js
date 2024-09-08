@@ -386,7 +386,7 @@ function setupBackgroundAnimation() {
             url("/images/vignette.png")
         `;
         body.style.backgroundRepeat = 'repeat, repeat, no-repeat';
-        body.style.backgroundSize = '1px 16px, auto, 110% 110%';
+        body.style.backgroundSize = '2px 32px, auto, 110% 110%';
         body.style.backgroundPosition = '0 0, 0 0, center center';
         body.style.backgroundBlendMode = 'normal, overlay, normal';
         let offset = 0;
