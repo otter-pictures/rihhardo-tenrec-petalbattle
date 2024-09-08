@@ -337,6 +337,7 @@ body,
 }
 
 .team-name {
+    font-family: "Inter", system-ui;
     font-size: 1rem;
 }
 
