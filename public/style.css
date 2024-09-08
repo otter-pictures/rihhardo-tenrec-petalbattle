@@ -68,14 +68,14 @@ body,
 }
 
 .question-header {
-  align-self: center;
-  font-size: 8vh;
-  padding-top: 8.5vh;
-  padding-bottom: 8.5vh;
+  font-size: 7vh;
+  height: 26vh;
   transition: opacity 0.3s ease;
-  white-space: nowrap;
   width: 100%;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .question-header.hidden {
