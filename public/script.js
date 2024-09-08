@@ -381,23 +381,21 @@ function setupBackgroundAnimation() {
     if (interfaces.audience) {
         body.style.backgroundImage = `
             url("/images/stripe.png"),
-            url("/images/noise.png")
+            url("/images/noise.png"),
+            url("/images/vignette.png")
         `;
-        body.style.backgroundRepeat = 'repeat, repeat';
-        body.style.backgroundSize = '1px 16px, auto';
-        body.style.backgroundBlendMode = 'normal, overlay';
+        body.style.backgroundRepeat = 'repeat, repeat, no-repeat';
+        body.style.backgroundSize = '1px 16px, auto, 110% 110%';
+        body.style.backgroundPosition = '0 0, 0 0, center center';
+        body.style.backgroundBlendMode = 'normal, overlay, normal';
         let offset = 0;
         (function animate() {
             offset = (offset + 0.25) % 16;
-            body.style.backgroundPosition = `0 ${offset}px, 0 0`;
+            body.style.backgroundPosition = `0 ${offset}px, 0 0, center center`;
             requestAnimationFrame(animate);
         })();
     } else if (interfaces.host) {
         body.style.backgroundColor = 'var(--main-bg-color)';
-        body.style.backgroundImage = 'url("/images/noise.png")';
-        body.style.backgroundRepeat = 'repeat';
-        body.style.backgroundSize = 'auto';
-        body.style.backgroundBlendMode = 'overlay';
     }
 }
 
