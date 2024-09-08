@@ -418,8 +418,8 @@ body,
 }
 
 .presenter, .copyright {
-    font-family: 'Faster One', cursive;
-    font-size: 32px;
+    font-family: "Helvetica Neue Condensed", "Inter", system-ui;
+    font-size: 40px;
     text-align: center;
     color: var(--text-color);
     font-weight: normal;
@@ -498,4 +498,19 @@ body,
 
 .answer-cell.animate-reveal {
     animation: revealAnswer 0.5s ease-out forwards;
+}
+
+@keyframes pop {
+    0%, 100% {
+        transform: scale(0.95);
+    }
+    50% {
+        transform: scale(1);
+    }
+}
+
+.pop-animation {
+    animation: pop 3s ease-in-out infinite;
+    max-width: 100%;
+    height: auto;
 }
