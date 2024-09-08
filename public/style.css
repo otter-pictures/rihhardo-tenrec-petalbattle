@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Faster+One&family=Asset&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Faster+One&family=Asset&family=Inter:wght@100..900&display=swap');
+@font-face {
+    font-family: 'Helvetica Neue Condensed';
+    src: url('/fonts/HelveticaNeueCondensed-Bold.ttf');
+  }
 
 /* ===== VARIABLES ===== */
 :root {
@@ -10,7 +14,7 @@
   --revealed-text-color: #ffffff;
   --strike-color: #dc3545;
   --sequence-bg-color: #FFFFFF;
-  --sequence-text-color: #001E8B;
+  --sequence-text-color: #FFD603;
   --stripe-color-1: rgba(70, 105, 231, 0.05);
   --border-color: rgba(255, 255, 255, 0.1);
   --input-bg-color: rgba(0, 0, 0, 0.2);
@@ -32,11 +36,10 @@
 
 body {
     margin: 0;
-    padding: 0;
+    padding-left: 32px;
+    padding-right: 32px;
     background-color: var(--main-bg-color);
     color: var(--text-color);
-    position: relative;
-    overflow: hidden;
 }
 
 body,
@@ -49,11 +52,9 @@ body,
 .team-name,
 .team-score,
 .strike {
-  font-family: "Inter", system-ui;
+  font-family: "Helvetica Neue Condensed", "Inter", system-ui;
   font-optical-sizing: auto;
-  font-weight: 600;
   font-style: normal;
-  text-transform: uppercase;
 }
 
 @keyframes scrollStripes {
@@ -63,49 +64,43 @@ body,
 
 /* ===== LAYOUT ===== */
 .audience-container {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    position: relative;
-    z-index: 1;
-    margin-left: 4%;
-    margin-right: 4%;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.gameboard {
-    align-self: center;
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap);
-    width: 100%;
-}
-
-.row {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: var(--gap);
-}
-
-.small-gap {
-    margin: 2vh 0;
-}
-
-/* ===== QUESTION HEADER ===== */
 .question-header {
-    align-self: center;
-    text-align: center;
-    font-size: 5vh; /* Starting font size */
-    line-height: 1.2;
-    transition: opacity 0.3s ease;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; /* Hide overflow */
-    padding-top: 2vh; /* Add some horizontal padding */
-    box-sizing: border-box; /* Include padding in width calculation */
+  font-size: 7vh;
+  height: 26vh;
+  transition: opacity 0.3s ease;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .question-header.hidden {
-    opacity: 0; /* Make it fully transparent when hidden */
+  opacity: 0;
+}
+
+.gameboard {
+  align-self: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--gap);
+}
+
+.small-gap {
+  margin: 2vh 0;
 }
 
 /* ===== ANSWER CELLS ===== */
@@ -140,15 +135,12 @@ body,
 }
 
 .sequence {
-    background-color: var(--sequence-bg-color);
     color: var(--sequence-text-color);
-    border-radius: 50%;
     width: 7vh;
     height: 7vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-weight: 900;
     font-size: var(--cell-font-size);
 }
 
@@ -209,11 +201,6 @@ body,
 
 /* ===== HOST INTERFACE STYLES ===== */
 .host-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    max-height: 100vh;
-    overflow-y: auto;
     box-sizing: border-box;
     color: var(--text-color);
 }
@@ -223,6 +210,7 @@ body,
 }
 
 .section {
+    font-family: "Inter", system-ui;
     margin-bottom: 20px;
     background-color: var(--cell-bg-color);
     border-radius: 8px;
@@ -239,7 +227,6 @@ body,
 }
 
 .section-title {
-    margin: 0;
     font-size: 1.2rem;
 }
 
@@ -368,7 +355,8 @@ body,
 }
 
 .short-input {
-    max-width: 60px;
+    width: 64px;
+    max-width: 80px;
 }
 
 .assign-revealed-btn {
@@ -449,7 +437,7 @@ body,
 .ellipse-container {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 50%;
     display: flex;
     justify-content: center;
     align-items: center;

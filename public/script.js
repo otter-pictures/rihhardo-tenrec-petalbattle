@@ -1,7 +1,7 @@
 const socket = io();
 const gameState = {};
 const sounds = {
-    wrong: new Audio('/sounds/wrong.mp3'),
+    wrong: Array.from({length: 10}, (_, i) => new Audio(`/sounds/wrong-${i+1}.mp3`)),
     correct: new Audio('/sounds/correct.mp3')
 };
 const interfaces = {
@@ -41,14 +41,15 @@ function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
             <div class="presenter">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
-            <div class="logo-card">
-                <div class="ellipse-container">
+            <div class="ellipse-container">
+                <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image" style="max-width: 80%; height: auto;">
+                <!-- <div class="ellipse-container">
                     <img src="/images/ellipse.svg" alt="Ellipse background" class="ellipse-svg">
                     <div class="title-container">
                         <div class="title-primary" data-text="Rooside">Rooside</div>
                         <div class="title-primary" data-text="sõda">sõda</div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="copyright">©2024</div>
         </div>
@@ -56,10 +57,11 @@ function renderStartScreen(gameState) {
 }
 
 function renderEmptyBoard(gameState) {
+    const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
     return `
         <div class="audience-container">
             <div class="question-header hidden">
-                <h2>Get ready for the next question!</h2>
+                ${currentQuestion.question}
             </div>
             <div class="gameboard">
                 ${renderEmptyRows()}
@@ -88,7 +90,7 @@ function renderGameBoard(gameState) {
     return `
         <div class="audience-container">
             <div class="question-header">
-                <h2>${currentQuestion.question}</h2>
+                ${currentQuestion.question}
             </div>
             <div class="gameboard">
                 ${renderAnswerRows(currentQuestion)}
@@ -360,7 +362,8 @@ const actions = {
         if (gameState.wrongAnswers < 3) {
             socket.emit('wrong-answer');
         }
-        sounds.wrong.play();
+        const randomIndex = Math.floor(Math.random() * sounds.wrong.length);
+        sounds.wrong[randomIndex].play();
     },
     changeQuestion: (direction) => {
         socket.emit('change-question', { direction });
@@ -380,23 +383,21 @@ function setupBackgroundAnimation() {
     if (interfaces.audience) {
         body.style.backgroundImage = `
             url("/images/stripe.png"),
-            url("/images/noise.png")
+            url("/images/noise.png"),
+            url("/images/vignette.png")
         `;
-        body.style.backgroundRepeat = 'repeat, repeat';
-        body.style.backgroundSize = '1px 16px, auto';
-        body.style.backgroundBlendMode = 'normal, overlay';
+        body.style.backgroundRepeat = 'repeat, repeat, no-repeat';
+        body.style.backgroundSize = '2px 32px, auto, 110% 110%';
+        body.style.backgroundPosition = '0 0, 0 0, center center';
+        body.style.backgroundBlendMode = 'normal, overlay, normal';
         let offset = 0;
         (function animate() {
             offset = (offset + 0.25) % 16;
-            body.style.backgroundPosition = `0 ${offset}px, 0 0`;
+            body.style.backgroundPosition = `0 ${offset}px, 0 0, center center`;
             requestAnimationFrame(animate);
         })();
     } else if (interfaces.host) {
         body.style.backgroundColor = 'var(--main-bg-color)';
-        body.style.backgroundImage = 'url("/images/noise.png")';
-        body.style.backgroundRepeat = 'repeat';
-        body.style.backgroundSize = 'auto';
-        body.style.backgroundBlendMode = 'overlay';
     }
 }
 
@@ -404,31 +405,10 @@ document.addEventListener('DOMContentLoaded', setupBackgroundAnimation);
 
 window.actions = actions;
 
-function fitQuestionToOneLine() {
-    const questionHeader = document.querySelector('.question-header');
-    if (!questionHeader) return;
-
-    const container = questionHeader.parentElement;
-    const maxWidth = container.clientWidth;
-
-    // Start with a large font size and decrease until it fits
-    let fontSize = 50; // Starting font size in pixels
-    questionHeader.style.fontSize = `${fontSize}px`;
-
-    while (questionHeader.scrollWidth > maxWidth && fontSize > 10) {
-        fontSize--;
-        questionHeader.style.fontSize = `${fontSize}px`;
-    }
-}
-
-// Call this function after rendering the question
+// Simplify the renderQuestion function
 function renderQuestion(question) {
     const questionHeader = document.querySelector('.question-header');
     if (questionHeader) {
         questionHeader.textContent = question;
-        fitQuestionToOneLine();
     }
 }
-
-// Also call this on window resize
-window.addEventListener('resize', fitQuestionToOneLine);
