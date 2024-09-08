@@ -303,7 +303,7 @@ function renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswer
 function renderTeamControl(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded) {
     return `
         <div class="team-control">
-            ${gameState.editingTeam === teamIndex ? renderTeamNameEdit(teamIndex, teamName) : renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded)}
+            ${gameState.editingTeam === teamIndex ? renderTeamNameEdit(teamIndex, teamName) : renderTeamControlContent(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded)}
         </div>
     `;
 }
@@ -318,19 +318,17 @@ function renderTeamNameEdit(teamIndex, teamName) {
     `;
 }
 
-function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded) {
+function renderTeamControlContent(teamIndex, teamName, assignedPoints, anyAnswerRevealed, gameEnded) {
     return `
-        <div class="team-control-row">
-            <span class="team-name">${teamName}</span>
-            <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Edit name</button>
-            <input type="number" class="input short-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
-            <button class="btn secondary" onclick="actions.setManualPoints(${teamIndex})">Set</button>
-            <button class="btn ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : 'secondary'} assign-revealed-btn" 
-                    onclick="actions.assignRevealedPoints(${teamIndex})"
-                    ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : ''}>
-                ${assignedPoints ? 'Assigned' : 'Add revealed'}
-            </button>
-        </div>
+        <span class="team-name">${teamName}</span>
+        <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Edit name</button>
+        <input type="number" class="input short-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
+        <button class="btn secondary" onclick="actions.setManualPoints(${teamIndex})">Set</button>
+        <button class="btn ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : 'primary'} assign-revealed-btn" 
+                onclick="actions.assignRevealedPoints(${teamIndex})"
+                ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : ''}>
+            ${assignedPoints ? 'Assigned' : 'Assign revealed'}
+        </button>
     `;
 }
 
