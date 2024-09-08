@@ -155,6 +155,7 @@ function renderGameOverScreen(gameState) {
             <div class="presenter">Võitja on:</div>
             <div class="logo-card">
                 <div class="ellipse-container">
+                    <img src="/images/ellipse.svg" alt="Ellipse background" class="ellipse-svg">
                     <div class="title-container">
                         <div class="title-primary">${gameState.teamNames[winner]}!</div>
                     </div>
@@ -312,9 +313,10 @@ function handleGameUpdate(updatedGameState) {
                 if (answer.revealed && (!gameState.questions[qIndex] || !gameState.questions[qIndex].answers[aIndex].revealed)) {
                     answer.justRevealed = true;
                     setTimeout(() => {
-                        delete updatedGameState.questions[qIndex].answers[aIndex].justRevealed;
+                        delete updatedGameState
+                        .questions[qIndex].answers[aIndex].justRevealed;
                         renderView(updatedGameState);
-                    }, 1000);
+                    }, 300);
                 }
             });
         });
