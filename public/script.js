@@ -1,5 +1,7 @@
 const socket = io();
-const gameState = {};
+const gameState = {
+    audioPermissionGranted: false
+};
 const sounds = {
     wrong: Array.from({length: 10}, (_, i) => new Audio(`/sounds/wrong-${i+1}.mp3`)),
     correct: new Audio('/sounds/correct.mp3')
@@ -29,8 +31,27 @@ function renderView(gameState) {
     if (interfaces.audience) renderAudienceView(gameState);
 }
 
+// Add this function near the top of the file
+function setupAudioPermission() {
+    if (interfaces.audience) {
+        const permissionButton = document.querySelector('.audio-permission-btn');
+        if (permissionButton) {
+            permissionButton.onclick = () => {
+                sounds.correct.play().then(() => {
+                    console.log('Audio permission granted');
+                    gameState.audioPermissionGranted = true;
+                    permissionButton.style.display = 'none';
+                }).catch(error => {
+                    console.error('Audio permission denied:', error);
+                });
+            };
+        }
+    }
+}
+
+// Modify the renderAudienceView function
 function renderAudienceView(gameState) {
-    const { gameStarted, revealedQuestions, currentQuestionIndex, gameEnded } = gameState;
+    const { gameStarted, revealedQuestions, currentQuestionIndex, gameEnded, audioPermissionGranted } = gameState;
     let renderFunction;
     
     if (!gameStarted) {
@@ -43,7 +64,12 @@ function renderAudienceView(gameState) {
         renderFunction = renderGameBoard;
     }
     
-    interfaces.audience.innerHTML = renderFunction(gameState);
+    interfaces.audience.innerHTML = `
+        ${!audioPermissionGranted ? '<button class="btn secondary audio-permission-btn">Enable Sound</button>' : ''}
+        ${renderFunction(gameState)}
+    `;
+    
+    setupAudioPermission();
 }
 
 // Helper functions for rendering audience view
@@ -286,7 +312,7 @@ function renderTeamNameEdit(teamIndex, teamName) {
     return `
         <div class="team-name-edit">
             <input type="text" class="input" value="${teamName}" id="team${teamIndex+1}-name-input" />
-            <button class="btn secondary" onclick="actions.updateTeamName(${teamIndex}, document.getElementById('team${teamIndex+1}-name-input').value)">Save</button>
+            <button class="btn primary" onclick="actions.updateTeamName(${teamIndex}, document.getElementById('team${teamIndex+1}-name-input').value)">Save</button>
             <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Cancel</button>
         </div>
     `;
@@ -302,13 +328,16 @@ function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerReve
             <button class="btn ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : 'secondary'} assign-revealed-btn" 
                     onclick="actions.assignRevealedPoints(${teamIndex})"
                     ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : ''}>
-                ${assignedPoints ? 'Assigned' : 'Assign Revealed'}
+                ${assignedPoints ? 'Assigned' : 'Add revealed'}
             </button>
         </div>
     `;
 }
 
 function handleGameUpdate(updatedGameState) {
+    // Preserve the audio permission state
+    updatedGameState.audioPermissionGranted = gameState.audioPermissionGranted;
+
     if (gameState.questions && updatedGameState.questions) {
         updatedGameState.questions.forEach((question, qIndex) => {
             question.answers.forEach((answer, aIndex) => {
@@ -400,7 +429,10 @@ function setupBackgroundAnimation() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', setupBackgroundAnimation);
+document.addEventListener('DOMContentLoaded', () => {
+    setupBackgroundAnimation();
+    setupAudioPermission();
+});
 
 window.actions = actions;
 
