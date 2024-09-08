@@ -32,8 +32,8 @@
 
 body {
     margin: 0;
-    padding-left: 3vh;
-    padding-right: 3vh;
+    padding-left: 32px;
+    padding-right: 32px;
     background-color: var(--main-bg-color);
     color: var(--text-color);
 }
@@ -202,11 +202,6 @@ body,
 
 /* ===== HOST INTERFACE STYLES ===== */
 .host-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    max-height: 100vh;
-    overflow-y: auto;
     box-sizing: border-box;
     color: var(--text-color);
 }
@@ -232,7 +227,6 @@ body,
 }
 
 .section-title {
-    margin: 0;
     font-size: 1.2rem;
 }
 
