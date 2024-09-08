@@ -44,7 +44,7 @@ function renderStartScreen(gameState) {
             <div class="presentation">
                 <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image pop-animation">
             </div>
-            <div class="title-secondary">©2024</div>
+            <div class="title-secondary">©2024 • Kratt & Näkk productions</div>
         </div>
     `;
 }
