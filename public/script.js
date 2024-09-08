@@ -12,6 +12,16 @@ const interfaces = {
 // Socket event listeners
 socket.on('connect', () => console.log('Connected to the server with Socket.io'));
 socket.on('game-update', handleGameUpdate);
+socket.on('play-sound', (soundType) => {
+    if (interfaces.audience) {  // Only play sounds if on the audience view
+        if (soundType === 'correct') {
+            sounds.correct.play();
+        } else if (soundType === 'wrong') {
+            const randomIndex = Math.floor(Math.random() * sounds.wrong.length);
+            sounds.wrong[randomIndex].play();
+        }
+    }
+});
 
 // Main render functions
 function renderView(gameState) {
@@ -345,15 +355,14 @@ const actions = {
     revealAnswer: (questionIndex, answerIndex) => {
         socket.emit('reveal-answer', { questionIndex, answerIndex });
         if (!gameState.assignedPoints[0] && !gameState.assignedPoints[1]) {
-            sounds.correct.play();
+            socket.emit('play-sound', 'correct');
         }
     },
     markWrongAnswer: () => {
         if (gameState.wrongAnswers < 3) {
             socket.emit('wrong-answer');
         }
-        const randomIndex = Math.floor(Math.random() * sounds.wrong.length);
-        sounds.wrong[randomIndex].play();
+        socket.emit('play-sound', 'wrong');
     },
     changeQuestion: (direction) => {
         socket.emit('change-question', { direction });
