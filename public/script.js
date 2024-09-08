@@ -40,11 +40,11 @@ function renderAudienceView(gameState) {
 function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
-            <div class="presenter">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
+            <div class="title-secondary">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
             <div class="ellipse-container">
                 <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image pop-animation">
             </div>
-            <div class="copyright">©2024</div>
+            <div class="title-secondary">©2024</div>
         </div>
     `;
 }
@@ -147,17 +147,16 @@ function renderGameOverScreen(gameState) {
     const winner = gameState.teamScores[0] > gameState.teamScores[1] ? 0 : 1;
     return `
         <div class="start-screen">
-            <div class="presenter">Võitja on:</div>
+            <div class="title-secondary">Võitja on:</div>
             <div class="logo-card">
                 <div class="ellipse-container">
-                    <img src="/images/ellipse.svg" alt="Ellipse background" class="ellipse-svg">
                     <div class="title-container">
                         <div class="title-primary">${gameState.teamNames[winner]}!</div>
                     </div>
                 </div>
             </div>
-            <div class="copyright">${gameState.teamNames[0]}: ${gameState.teamScores[0]}</div>
-            <div class="copyright">${gameState.teamNames[1]}: ${gameState.teamScores[1]}</div>
+            <div class="title-secondary">${gameState.teamNames[0]}: ${gameState.teamScores[0]}</div>
+            <div class="title-secondary">${gameState.teamNames[1]}: ${gameState.teamScores[1]}</div>
         </div>
     `;
 }
