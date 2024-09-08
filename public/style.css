@@ -186,7 +186,7 @@ body {
 .host-container {
     box-sizing: border-box;
     color: var(--text-color);
-    padding-top: 16px;
+    padding-top: 32px;
 }
 
 .host-container * {
@@ -195,7 +195,7 @@ body {
 
 .section {
     font-family: "Inter", system-ui;
-    margin-bottom: 16px;
+    margin-bottom: 32px;
     background-color: var(--cell-bg-color);
     border-radius: 8px;
     overflow: hidden;

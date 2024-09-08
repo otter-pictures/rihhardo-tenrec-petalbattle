@@ -249,7 +249,7 @@ function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted,
                 <div class="button-group">
                     <button class="btn secondary" onclick="actions.changeQuestion('prev')" ${!gameStarted || !isQuestionRevealed || isFirstQuestion ? 'disabled' : ''}>Previous</button>
                     <button class="btn secondary" onclick="actions.changeQuestion('next')" ${!gameStarted || !isQuestionRevealed || !allAnswersRevealed || isLastQuestion ? 'disabled' : ''}>Next</button>
-                    <button class="btn primary" onclick="actions.endGame()" ${!isLastQuestion || !allAnswersRevealed ? 'disabled' : ''}>End Game</button>
+                    <button class="btn primary" onclick="actions.endGame()" ${!isLastQuestion || !allAnswersRevealed ? 'disabled' : ''}>End game</button>
                 </div>
             </div>
         </div>
@@ -262,7 +262,7 @@ function renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers,
             <div class="section-header">
                 <h2 class="section-title">Answers</h2>
                 <button class="btn primary" onclick="actions.markWrongAnswer()" ${!isQuestionRevealed || gameEnded ? 'disabled' : ''}>
-                    Mark Wrong (${wrongAnswers}/3)
+                    Strike (${wrongAnswers}/3)
                 </button>
             </div>
             <ul class="answer-list">
@@ -288,7 +288,7 @@ function renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswer
             <div class="section-header">
                 <h2 class="section-title">Controls</h2>
                 <button class="btn primary" onclick="actions.startGame()" ${gameStarted ? 'disabled' : ''}>
-                    ${gameStarted ? 'Game Started' : 'Start Game'}
+                    ${gameStarted ? 'Game started' : 'Start game'}
                 </button>
             </div>
             <div class="content-box">
@@ -322,7 +322,7 @@ function renderTeamControlRow(teamIndex, teamName, assignedPoints, anyAnswerReve
     return `
         <div class="team-control-row">
             <span class="team-name">${teamName}</span>
-            <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Edit</button>
+            <button class="btn secondary" onclick="actions.toggleEditTeamName(${teamIndex})">Edit name</button>
             <input type="number" class="input short-input" id="team${teamIndex+1}-points" value="${gameState.teamScores[teamIndex]}" min="0" />
             <button class="btn secondary" onclick="actions.setManualPoints(${teamIndex})">Set</button>
             <button class="btn ${assignedPoints || !anyAnswerRevealed || gameEnded ? 'disabled' : 'secondary'} assign-revealed-btn" 
