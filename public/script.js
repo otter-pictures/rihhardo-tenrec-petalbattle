@@ -41,14 +41,15 @@ function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
             <div class="presenter">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
-            <div class="logo-card">
-                <div class="ellipse-container">
+            <div class="ellipse-container">
+                <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image" style="max-width: 80%; height: auto;">
+                <!-- <div class="ellipse-container">
                     <img src="/images/ellipse.svg" alt="Ellipse background" class="ellipse-svg">
                     <div class="title-container">
                         <div class="title-primary" data-text="Rooside">Rooside</div>
                         <div class="title-primary" data-text="sõda">sõda</div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="copyright">©2024</div>
         </div>
