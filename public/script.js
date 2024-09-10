@@ -78,7 +78,7 @@ function renderStartScreen(gameState) {
         <div class="start-screen">
             <div class="title-secondary">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
             <div class="presentation">
-                <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image pop-animation">
+                <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image pop-animation" style="height: auto; max-height: 64vh; width: auto; max-width: 100%;">
             </div>
             <div class="title-secondary">©2024 • Kratt & Näkk productions</div>
         </div>
