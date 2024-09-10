@@ -180,12 +180,16 @@ function renderStrikes(wrongAnswers) {
 }
 
 function renderGameOverScreen(gameState) {
-    const winner = gameState.teamScores[0] > gameState.teamScores[1] ? 0 : 1;
+    const isDraw = gameState.teamScores[0] === gameState.teamScores[1];
+    const winner = isDraw ? -1 : (gameState.teamScores[0] > gameState.teamScores[1] ? 0 : 1);
+    
     return `
         <div class="start-screen">
-            <div class="title-secondary">Võitja on:</div>
+            <div class="title-secondary">${isDraw ? 'Pask, keegi ei võitnud!' : 'Võitja on:'}</div>
             <div class="presentation">
-                <div class="title-primary pop-animation">${gameState.teamNames[winner]}!</div>
+                <div class="title-primary pop-animation">
+                    ${isDraw ? "Viik!" : `${gameState.teamNames[winner]}!`}
+                </div>
             </div>
             <div class="scores-container">
                 <div class="title-secondary">${gameState.teamNames[0]} - ${gameState.teamScores[0]}</div>
