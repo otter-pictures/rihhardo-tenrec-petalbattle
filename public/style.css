@@ -45,6 +45,13 @@ body {
     font-style: normal;
 }
 
+.audio-permission-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+}
+
 .question-header {
   font-size: 7vh;
   height: 26vh;
@@ -179,6 +186,7 @@ body {
 .host-container {
     box-sizing: border-box;
     color: var(--text-color);
+    padding-top: 32px;
 }
 
 .host-container * {
@@ -187,7 +195,7 @@ body {
 
 .section {
     font-family: "Inter", system-ui;
-    margin-bottom: 20px;
+    margin-bottom: 32px;
     background-color: var(--cell-bg-color);
     border-radius: 8px;
     overflow: hidden;
@@ -296,17 +304,18 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding: 8px 0;
+    width: 100%;
 }
 
 .team-name-edit, .team-points {
     display: flex;
     gap: 10px;
     align-items: center;
+    width: 100%;
 }
 
-.team-name-display, .team-name-edit {
+.team-name-display {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -315,20 +324,6 @@ body {
 .team-name {
     font-family: "Inter", system-ui;
     font-size: 1rem;
-}
-
-.team-controls-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.team-control-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
 }
 
 .short-input {

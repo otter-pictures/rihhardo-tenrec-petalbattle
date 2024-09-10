@@ -151,6 +151,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
+
+    socket.on('play-sound', (soundType) => {
+        io.emit('play-sound', soundType);
+    });
 });
 
 server.listen(4000, () => {
