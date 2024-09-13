@@ -27,12 +27,22 @@ const loadQuestions = async () => {
         fs.createReadStream('questions.csv')
             .pipe(csv())
             .on('data', (row) => {
+                if (!row.question || !row.answer || !row.points) {
+                    console.warn('Invalid row in CSV:', row);
+                    return;
+                }
                 if (!questions[row.question]) {
                     questions[row.question] = [];
                 }
                 questions[row.question].push({ answer: row.answer, points: parseInt(row.points), revealed: false });
             })
-            .on('end', () => resolve(questions))
+            .on('end', () => {
+                if (Object.keys(questions).length === 0) {
+                    reject(new Error('No valid questions found in the CSV file'));
+                } else {
+                    resolve(questions);
+                }
+            })
             .on('error', (error) => reject(error));
     });
 };
@@ -58,26 +68,51 @@ io.on('connection', (socket) => {
     socket.emit('game-update', gameState);
 
     socket.on('update-team-name', (data) => {
-        const { teamIndex, newName } = data;
-        gameState.teamNames[teamIndex] = newName;
-        io.emit('game-update', gameState);
+        try {
+            const { teamIndex, newName } = data;
+            if (teamIndex !== 0 && teamIndex !== 1) {
+                throw new Error('Invalid team index');
+            }
+            if (typeof newName !== 'string' || newName.length === 0) {
+                throw new Error('Invalid team name');
+            }
+            gameState.teamNames[teamIndex] = newName;
+            io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error updating team name:', error.message);
+            socket.emit('error', { message: 'Failed to update team name' });
+        }
     });
 
     socket.on('reveal-answer', ({ questionIndex, answerIndex }) => {
-        if (gameState.gameStarted && gameState.revealedQuestions.includes(questionIndex)) {
+        try {
+            if (!gameState.gameStarted || !gameState.revealedQuestions.includes(questionIndex)) {
+                throw new Error('Cannot reveal answer: game not started or question not revealed');
+            }
+            if (questionIndex < 0 || questionIndex >= gameState.questions.length || 
+                answerIndex < 0 || answerIndex >= gameState.questions[questionIndex].answers.length) {
+                throw new Error('Invalid question or answer index');
+            }
             gameState.questions[questionIndex].answers[answerIndex].revealed = true;
             io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error revealing answer:', error.message);
+            socket.emit('error', { message: 'Failed to reveal answer' });
         }
     });
 
     socket.on('assign-revealed-points', ({ teamIndex }) => {
-        const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
-        const canAssignPoints = gameState.gameStarted && 
-            gameState.revealedQuestions.includes(gameState.currentQuestionIndex) &&
-            currentQuestion.answers.some(answer => answer.revealed) &&
-            !gameState.assignedPoints[teamIndex];
+        try {
+            const currentQuestion = gameState.questions[gameState.currentQuestionIndex];
+            const canAssignPoints = gameState.gameStarted && 
+                gameState.revealedQuestions.includes(gameState.currentQuestionIndex) &&
+                currentQuestion.answers.some(answer => answer.revealed) &&
+                !gameState.assignedPoints[teamIndex];
 
-        if (canAssignPoints) {
+            if (!canAssignPoints) {
+                throw new Error('Cannot assign points');
+            }
+
             const points = currentQuestion.answers.reduce((sum, answer) => 
                 answer.revealed ? sum + answer.points : sum, 0);
 
@@ -86,49 +121,81 @@ io.on('connection', (socket) => {
 
             console.log(`Assigned ${points} points to Team ${teamIndex + 1}`);
             io.emit('game-update', gameState);
-        } else {
-            console.log(`Unable to assign points to Team ${teamIndex + 1}.`);
+        } catch (error) {
+            console.error('Error assigning points:', error.message);
+            socket.emit('error', { message: 'Failed to assign points' });
         }
     });
 
     socket.on('set-manual-points', (data) => {
-        const { teamIndex, points } = data;
-
-        gameState.teamScores[teamIndex] = points;
-        console.log(`Manually set Team ${teamIndex + 1} score to ${points}`);
-        io.emit('game-update', gameState);
+        try {
+            const { teamIndex, points } = data;
+            if (teamIndex !== 0 && teamIndex !== 1) {
+                throw new Error('Invalid team index');
+            }
+            if (typeof points !== 'number' || points < 0) {
+                throw new Error('Invalid points value');
+            }
+            gameState.teamScores[teamIndex] = points;
+            console.log(`Manually set Team ${teamIndex + 1} score to ${points}`);
+            io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error setting manual points:', error.message);
+            socket.emit('error', { message: 'Failed to set manual points' });
+        }
     });
 
     socket.on('wrong-answer', () => {
-        gameState.wrongAnswers += 1;
+        try {
+            gameState.wrongAnswers += 1;
 
-        if (gameState.wrongAnswers >= 3) {
-            io.emit('strike-limit-reached', { message: '3 wrong answers reached!' });
+            if (gameState.wrongAnswers >= 3) {
+                io.emit('strike-limit-reached', { message: '3 wrong answers reached!' });
+            }
+
+            io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error handling wrong answer:', error.message);
+            socket.emit('error', { message: 'Failed to handle wrong answer' });
         }
-
-        io.emit('game-update', gameState);
     });
 
     socket.on('start-game', () => {
-        gameState.gameStarted = true;
-        gameState.questionRevealed = false;
-        io.emit('game-update', gameState);
+        try {
+            gameState.gameStarted = true;
+            gameState.questionRevealed = false;
+            io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error starting game:', error.message);
+            socket.emit('error', { message: 'Failed to start game' });
+        }
     });
 
     socket.on('reveal-question', () => {
-        if (gameState.gameStarted && !gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+        try {
+            if (!gameState.gameStarted || gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+                throw new Error('Cannot reveal question: game not started or question already revealed');
+            }
             gameState.revealedQuestions.push(gameState.currentQuestionIndex);
             gameState.questionRevealed = true;
             io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error revealing question:', error.message);
+            socket.emit('error', { message: 'Failed to reveal question' });
         }
     });
 
     socket.on('change-question', ({ direction }) => {
-        if (gameState.gameStarted && gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+        try {
+            if (!gameState.gameStarted || !gameState.revealedQuestions.includes(gameState.currentQuestionIndex)) {
+                throw new Error('Cannot change question: game not started or current question not revealed');
+            }
             if (direction === 'next' && gameState.currentQuestionIndex < gameState.questions.length - 1) {
                 gameState.currentQuestionIndex++;
             } else if (direction === 'prev' && gameState.currentQuestionIndex > 0) {
                 gameState.currentQuestionIndex--;
+            } else {
+                throw new Error('Invalid direction');
             }
 
             gameState.wrongAnswers = 0;
@@ -136,15 +203,22 @@ io.on('connection', (socket) => {
             gameState.questionRevealed = gameState.revealedQuestions.includes(gameState.currentQuestionIndex);
 
             io.emit('game-update', gameState);
-        } else {
-            console.log('Cannot change question: game not started or current question not revealed');
+        } catch (error) {
+            console.error('Error changing question:', error.message);
+            socket.emit('error', { message: 'Failed to change question' });
         }
     });
 
     socket.on('end-game', () => {
-        if (gameState.gameStarted && gameState.currentQuestionIndex === gameState.questions.length - 1) {
+        try {
+            if (!gameState.gameStarted || gameState.currentQuestionIndex !== gameState.questions.length - 1) {
+                throw new Error('Cannot end game: game not started or not on the last question');
+            }
             gameState.gameEnded = true;
             io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error ending game:', error.message);
+            socket.emit('error', { message: 'Failed to end game' });
         }
     });
 
@@ -153,7 +227,25 @@ io.on('connection', (socket) => {
     });
 
     socket.on('play-sound', (soundType) => {
-        io.emit('play-sound', soundType);
+        try {
+            if (!['correct', 'wrong'].includes(soundType)) {
+                throw new Error('Invalid sound type');
+            }
+            io.emit('play-sound', soundType);
+        } catch (error) {
+            console.error('Error playing sound:', error.message);
+            socket.emit('error', { message: 'Failed to play sound' });
+        }
+    });
+
+    socket.on('error', (error) => {
+        console.error('Server error:', error.message);
+        socket.emit('error', { message: 'An error occurred. Please try again.' });
+    });
+
+    socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+        socket.emit('error', { message: 'Failed to connect to the server. Please check your internet connection and try again.' });
     });
 });
 

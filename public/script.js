@@ -25,6 +25,16 @@ socket.on('play-sound', (soundType) => {
     }
 });
 
+socket.on('error', (error) => {
+    console.error('Server error:', error.message);
+    alert('An error occurred. Please try again.');
+});
+
+socket.on('connect_error', (error) => {
+    console.error('Connection error:', error);
+    alert('Failed to connect to the server. Please check your internet connection and try again.');
+});
+
 // Main render functions
 function renderView(gameState) {
     if (interfaces.host) renderHostView(gameState);
@@ -37,12 +47,16 @@ function setupAudioPermission() {
         const permissionButton = document.querySelector('.audio-permission-btn');
         if (permissionButton) {
             permissionButton.onclick = () => {
-                sounds.correct.play().then(() => {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioContext.resume().then(() => {
+                    return sounds.correct.play();
+                }).then(() => {
                     console.log('Audio permission granted');
                     gameState.audioPermissionGranted = true;
                     permissionButton.style.display = 'none';
                 }).catch(error => {
                     console.error('Audio permission denied:', error);
+                    alert('Failed to enable audio. Please check your browser settings and try again.');
                 });
             };
         }
@@ -367,7 +381,11 @@ const actions = {
         renderHostView(gameState);
     },
     updateTeamName: (teamIndex, newName) => {
-        socket.emit('update-team-name', { teamIndex, newName });
+        if (typeof newName !== 'string' || newName.trim().length === 0) {
+            alert('Please enter a valid team name');
+            return;
+        }
+        socket.emit('update-team-name', { teamIndex, newName: newName.trim() });
         gameState.editingTeam = null;
         renderHostView(gameState);
     },

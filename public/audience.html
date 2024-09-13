@@ -10,5 +10,17 @@
   <div id="audience-interface"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
+  <div id="error-boundary" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.8); color: white; padding: 20px; z-index: 9999;">
+    <h2>An error occurred</h2>
+    <p id="error-message"></p>
+    <button onclick="location.reload()">Reload Page</button>
+  </div>
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+        document.getElementById('error-boundary').style.display = 'block';
+        document.getElementById('error-message').textContent = message;
+        console.error('Uncaught error:', error);
+    };
+  </script>
 </body>
 </html>
