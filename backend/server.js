@@ -19,6 +19,8 @@ let gameState = {
     questionRevealed: false,
     revealedQuestions: [],
     gameEnded: false,
+    earlyFinishQuestionIndex: null,
+    finishedEarly: false,  // Add this line
 };
 
 const loadQuestions = async () => {
@@ -215,10 +217,41 @@ io.on('connection', (socket) => {
                 throw new Error('Cannot end game: game not started or not on the last question');
             }
             gameState.gameEnded = true;
+            gameState.finishedEarly = false;  // Add this line
             io.emit('game-update', gameState);
         } catch (error) {
             console.error('Error ending game:', error.message);
             socket.emit('error', { message: 'Failed to end game' });
+        }
+    });
+
+    socket.on('finish-game-early', () => {
+        try {
+            if (!gameState.gameStarted) {
+                throw new Error('Cannot finish game early: game not started');
+            }
+            gameState.earlyFinishQuestionIndex = gameState.currentQuestionIndex;
+            gameState.gameEnded = true;
+            gameState.finishedEarly = true;  // Add this line
+            io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error finishing game early:', error.message);
+            socket.emit('error', { message: 'Failed to finish game early' });
+        }
+    });
+
+    socket.on('resume-game', () => {
+        try {
+            if (!gameState.gameEnded || gameState.earlyFinishQuestionIndex === null) {
+                throw new Error('Cannot resume game: game not ended early');
+            }
+            gameState.currentQuestionIndex = gameState.earlyFinishQuestionIndex;
+            gameState.gameEnded = false;
+            gameState.earlyFinishQuestionIndex = null;
+            io.emit('game-update', gameState);
+        } catch (error) {
+            console.error('Error resuming game:', error.message);
+            socket.emit('error', { message: 'Failed to resume game' });
         }
     });
 

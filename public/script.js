@@ -215,7 +215,7 @@ function renderGameOverScreen(gameState) {
 
 // Render Host Interface
 function renderHostView(gameState) {
-    const { currentQuestionIndex, questions, gameStarted, revealedQuestions, wrongAnswers, teamNames, assignedPoints, gameEnded } = gameState;
+    const { currentQuestionIndex, questions, gameStarted, revealedQuestions, wrongAnswers, teamNames, assignedPoints, gameEnded, finishedEarly } = gameState;
     const currentQuestion = questions[currentQuestionIndex];
     const isQuestionRevealed = revealedQuestions.includes(currentQuestionIndex);
     const anyAnswerRevealed = currentQuestion.answers.some(answer => answer.revealed);
@@ -225,7 +225,7 @@ function renderHostView(gameState) {
 
     interfaces.host.innerHTML = `
         <div class="host-container">
-            ${renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded)}
+            ${renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded, finishedEarly)}
             ${renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers, currentQuestionIndex, gameEnded)}
             ${renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswerRevealed, gameEnded)}
         </div>
@@ -233,7 +233,7 @@ function renderHostView(gameState) {
 }
 
 // Helper functions for renderHostView
-function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded) {
+function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded, finishedEarly) {
     if (gameEnded) {
         return `
             <div class="section">
@@ -248,6 +248,7 @@ function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted,
                     <div class="button-group">
                         <button class="btn secondary" onclick="actions.changeQuestion('prev')" ${isFirstQuestion ? 'disabled' : ''}>Previous</button>
                         <button class="btn secondary" onclick="actions.changeQuestion('next')" ${isLastQuestion ? 'disabled' : ''}>Next</button>
+                        ${finishedEarly ? '<button class="btn primary" onclick="actions.resumeGame()">Resume Game</button>' : ''}
                     </div>
                 </div>
             </div>
@@ -268,6 +269,7 @@ function renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted,
                     <button class="btn secondary" onclick="actions.changeQuestion('prev')" ${!gameStarted || !isQuestionRevealed || isFirstQuestion ? 'disabled' : ''}>Previous</button>
                     <button class="btn secondary" onclick="actions.changeQuestion('next')" ${!gameStarted || !isQuestionRevealed || !allAnswersRevealed || isLastQuestion ? 'disabled' : ''}>Next</button>
                     <button class="btn primary" onclick="actions.endGame()" ${!isLastQuestion || !allAnswersRevealed ? 'disabled' : ''}>End game</button>
+                    <button class="btn danger" onclick="actions.finishGameEarly()">Finish game early</button>
                 </div>
             </div>
         </div>
@@ -423,6 +425,16 @@ const actions = {
     revealQuestion: () => socket.emit('reveal-question'),
     endGame: () => {
         socket.emit('end-game');
+    },
+    finishGameEarly: () => {
+        if (confirm('Are you sure you want to finish the game early?')) {
+            socket.emit('finish-game-early');
+        }
+    },
+    resumeGame: () => {
+        if (confirm('Are you sure you want to resume the game?')) {
+            socket.emit('resume-game');
+        }
     },
 };
 

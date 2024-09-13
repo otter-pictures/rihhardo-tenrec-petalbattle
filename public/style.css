@@ -264,6 +264,17 @@ body {
     border: 1px solid transparent;
 }
 
+.btn.danger {
+    background-color: #dc3545;
+    color: var(--revealed-text-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn.danger:hover:not(:disabled) {
+    background-color: #c82333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
 /* ===== INPUTS ===== */
 .input {
     padding: 8px 12px;
