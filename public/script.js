@@ -90,9 +90,9 @@ function renderAudienceView(gameState) {
 function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
-            <div class="title-secondary">Rihhardo-Tenrec Tulbilahing™ esitleb:</div>
+            <div class="title-secondary">Rihhardo-Tenrec Tulbilahing™ presents:</div>
             <div class="presentation">
-                <img src="/images/title_@3x.png" alt="Rooside sõda" class="title-image pop-animation" style="height: auto; max-height: 64vh; width: auto; max-width: 100%;">
+                <img src="/images/title_@3x.png" alt="Family Feud" class="title-image pop-animation" style="height: auto; max-height: 64vh; width: auto; max-width: 100%;">
             </div>
             <div class="title-secondary">©2024 • Kratt & Näkk productions</div>
         </div>
@@ -199,7 +199,7 @@ function renderGameOverScreen(gameState) {
     
     return `
         <div class="start-screen">
-            <div class="title-secondary">${isDraw ? 'Pask, keegi ei võitnud!' : 'Võitja on:'}</div>
+            <div class="title-secondary">${isDraw ? 'Draw!' : 'The winner is:'}</div>
             <div class="presentation">
                 <div class="title-primary pop-animation">
                     ${isDraw ? "Viik!" : `${gameState.teamNames[winner]}!`}
