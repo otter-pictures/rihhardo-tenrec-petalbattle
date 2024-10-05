@@ -451,11 +451,11 @@ function setupBackgroundAnimation() {
         body.style.backgroundPosition = '0 0, 0 0, center center';
         body.style.backgroundBlendMode = 'normal, overlay, normal';
         let offset = 0;
-        (function animate() {
-            offset = (offset + 0.25) % 16;
-            body.style.backgroundPosition = `0 ${offset}px, 0 0, center center`;
-            requestAnimationFrame(animate);
-        })();
+        // (function animate() {
+        //     offset = (offset + 0.25) % 16;
+        //     body.style.backgroundPosition = `0 ${offset}px, 0 0, center center`;
+        //     requestAnimationFrame(animate);
+        // })();
     } else if (interfaces.host) {
         body.style.backgroundColor = 'var(--main-bg-color)';
     }
