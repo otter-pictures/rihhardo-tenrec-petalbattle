@@ -20,7 +20,7 @@ let gameState = {
     revealedQuestions: [],
     gameEnded: false,
     earlyFinishQuestionIndex: null,
-    finishedEarly: false,  // Add this line
+    finishedEarly: false,
 };
 
 const loadQuestions = async () => {
@@ -217,7 +217,7 @@ io.on('connection', (socket) => {
                 throw new Error('Cannot end game: game not started or not on the last question');
             }
             gameState.gameEnded = true;
-            gameState.finishedEarly = false;  // Add this line
+            gameState.finishedEarly = false;
             io.emit('game-update', gameState);
         } catch (error) {
             console.error('Error ending game:', error.message);
@@ -232,7 +232,7 @@ io.on('connection', (socket) => {
             }
             gameState.earlyFinishQuestionIndex = gameState.currentQuestionIndex;
             gameState.gameEnded = true;
-            gameState.finishedEarly = true;  // Add this line
+            gameState.finishedEarly = true;
             io.emit('game-update', gameState);
         } catch (error) {
             console.error('Error finishing game early:', error.message);

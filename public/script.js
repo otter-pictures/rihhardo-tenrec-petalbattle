@@ -15,7 +15,7 @@ const interfaces = {
 socket.on('connect', () => console.log('Connected to the server with Socket.io'));
 socket.on('game-update', handleGameUpdate);
 socket.on('play-sound', (soundType) => {
-    if (interfaces.audience) {  // Only play sounds if on the audience view
+    if (interfaces.audience) {
         if (soundType === 'correct') {
             sounds.correct.play();
         } else if (soundType === 'wrong') {
@@ -90,7 +90,7 @@ function renderAudienceView(gameState) {
 function renderStartScreen(gameState) {
     return `
         <div class="start-screen">
-            <div class="title-secondary">Rihhardo-Tenrec Tulbilahing™ presents:</div>
+            <div class="title-secondary">Rihhardo-Tenrec Ossborne Tulbilahing™ presents:</div>
             <div class="presentation">
                 <img src="/images/title_@3x.png" alt="Family Feud" class="title-image pop-animation" style="height: auto; max-height: 64vh; width: auto; max-width: 100%;">
             </div>
@@ -417,7 +417,6 @@ const actions = {
     },
     changeQuestion: (direction) => {
         socket.emit('change-question', { direction });
-        // Force update the audience view
         socket.emit('force-update-audience');
     },
     resetWrongAnswers: () => socket.emit('reset-wrong-answers'),
@@ -468,7 +467,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.actions = actions;
 
-// Simplify the renderQuestion function
 function renderQuestion(question) {
     const questionHeader = document.querySelector('.question-header');
     if (questionHeader) {
