@@ -199,7 +199,7 @@ function renderGameOverScreen(gameState) {
     
     return `
         <div class="start-screen">
-            <div class="title-secondary">${isDraw ? 'Draw!' : 'The winner is:'}</div>
+            <div class="title-secondary">${isDraw ? 'Viik!' : 'Võitja on:'}</div>
             <div class="presentation">
                 <div class="title-primary pop-animation">
                     ${isDraw ? "Viik!" : `${gameState.teamNames[winner]}!`}
