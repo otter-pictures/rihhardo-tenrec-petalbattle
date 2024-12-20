@@ -464,25 +464,6 @@ body {
     height: auto;
 }
 
-.admin-section,
-.admin-section .section-header,
-.admin-section .section-header h2,
-.admin-section .section-content,
-.admin-controls,
-.admin-controls .control-group,
-.danger-button,
-.danger-button:hover,
-.game-button i,
-.admin-button,
-.admin-button:hover,
-.file-upload,
-.control-button,
-.control-button:hover,
-.control-button i,
-.control-row {
-    /* Remove all custom styles */
-}
-
 .file-upload input[type="file"] {
     display: none;
 }
