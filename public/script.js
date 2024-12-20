@@ -1,19 +1,72 @@
-const socket = io();
+const socket = io({
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    timeout: 20000
+});
+
 const gameState = {
-    audioPermissionGranted: false
+    audioPermissionGranted: false,
+    lastUpdateTime: null,
+    isReconnecting: false,
+    editingTeam: null
 };
+
 const sounds = {
     wrong: Array.from({length: 10}, (_, i) => new Audio(`/sounds/wrong-${i+1}.mp3`)),
     correct: new Audio('/sounds/correct.mp3')
 };
+
 const interfaces = {
     host: document.getElementById('host-interface'),
     audience: document.getElementById('audience-interface')
 };
 
 // Socket event listeners
-socket.on('connect', () => console.log('Connected to the server with Socket.io'));
-socket.on('game-update', handleGameUpdate);
+socket.on('connect', () => {
+    console.log('Connected to the server with Socket.io');
+    if (gameState.lastUpdateTime) {
+        console.log('Requesting state after reconnection');
+        socket.emit('request-state', gameState.lastUpdateTime);
+    }
+});
+
+socket.on('game-update', (updatedState) => {
+    gameState.lastUpdateTime = updatedState.lastUpdateTime;
+    handleGameUpdate(updatedState);
+    
+    // Save state to localStorage for persistence
+    try {
+        localStorage.setItem('gameLastUpdateTime', gameState.lastUpdateTime);
+    } catch (error) {
+        console.error('Error saving state to localStorage:', error);
+    }
+});
+
+socket.on('disconnect', (reason) => {
+    console.log('Disconnected from server:', reason);
+    gameState.isReconnecting = true;
+    updateConnectionStatus('Disconnected - attempting to reconnect...');
+});
+
+socket.on('reconnect_attempt', (attemptNumber) => {
+    console.log(`Reconnection attempt ${attemptNumber}`);
+    updateConnectionStatus(`Reconnecting... (attempt ${attemptNumber})`);
+});
+
+socket.on('reconnect', () => {
+    console.log('Reconnected to server');
+    gameState.isReconnecting = false;
+    updateConnectionStatus('Connected');
+});
+
+socket.on('reconnect_failed', () => {
+    console.log('Failed to reconnect');
+    gameState.isReconnecting = false;
+    updateConnectionStatus('Connection failed - please refresh the page');
+});
+
 socket.on('play-sound', (soundType) => {
     if (interfaces.audience) {
         if (soundType === 'correct') {
@@ -94,7 +147,7 @@ function renderStartScreen(gameState) {
             <div class="presentation">
                 <img src="/images/title_@3x.png" alt="Family Feud" class="title-image pop-animation" style="height: auto; max-height: 64vh; width: auto; max-width: 100%;">
             </div>
-            <div class="title-secondary">©2024 • Kratt & Näkk productions</div>
+            <div class="title-secondary">2024 • Kratt & Näkk productions</div>
         </div>
     `;
 }
@@ -215,19 +268,33 @@ function renderGameOverScreen(gameState) {
 
 // Render Host Interface
 function renderHostView(gameState) {
-    const { currentQuestionIndex, questions, gameStarted, revealedQuestions, wrongAnswers, teamNames, assignedPoints, gameEnded, finishedEarly } = gameState;
-    const currentQuestion = questions[currentQuestionIndex];
-    const isQuestionRevealed = revealedQuestions.includes(currentQuestionIndex);
-    const anyAnswerRevealed = currentQuestion.answers.some(answer => answer.revealed);
-    const allAnswersRevealed = currentQuestion.answers.every(answer => answer.revealed);
-    const isFirstQuestion = currentQuestionIndex === 0;
-    const isLastQuestion = currentQuestionIndex === questions.length - 1;
-
+    const { currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded, finishedEarly } = getGameState(gameState);
+    
     interfaces.host.innerHTML = `
         <div class="host-container">
             ${renderQuestionSection(currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded, finishedEarly)}
-            ${renderAnswersSection(currentQuestion, isQuestionRevealed, wrongAnswers, currentQuestionIndex, gameEnded)}
-            ${renderControlsSection(gameStarted, teamNames, assignedPoints, anyAnswerRevealed, gameEnded)}
+            ${renderAnswersSection(currentQuestion, isQuestionRevealed, gameState.wrongAnswers, gameState.currentQuestionIndex, gameEnded)}
+            ${renderControlsSection(gameStarted, gameState.teamNames, gameState.assignedPoints, anyAnswerRevealed(currentQuestion), gameEnded)}
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Administration</h2>
+                </div>
+                <div class="content-box">
+                    <div class="button-group">
+                        <button class="btn danger" onclick="actions.resetGame()">
+                            <i class="fas fa-redo"></i>
+                            <span>Reset Game</span>
+                        </button>
+                        <div class="file-upload">
+                            <label for="questions-upload" class="btn secondary">
+                                <i class="fas fa-file-upload"></i>
+                                <span>Upload Questions</span>
+                            </label>
+                            <input type="file" id="questions-upload" accept=".csv" style="display: none" onchange="actions.uploadQuestions(event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 }
@@ -435,6 +502,49 @@ const actions = {
             socket.emit('resume-game');
         }
     },
+    resetGame() {
+        if (confirm('Are you sure you want to reset the game? This will clear all progress.')) {
+            socket.emit('reset-game');
+        }
+    },
+
+    async uploadQuestions(event) {
+        const fileInput = event.target;
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert('Please select a file');
+            return;
+        }
+
+        if (!file.name.endsWith('.csv')) {
+            alert('Please upload a CSV file');
+            fileInput.value = '';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('questions', file);
+
+        try {
+            const response = await fetch('/upload-questions', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to upload questions');
+            }
+
+            alert('Questions uploaded successfully!');
+            fileInput.value = '';
+        } catch (error) {
+            console.error('Error uploading questions:', error);
+            alert(error.message);
+        }
+    }
 };
 
 function setupBackgroundAnimation() {
@@ -460,9 +570,43 @@ function setupBackgroundAnimation() {
     }
 }
 
+function updateConnectionStatus(message) {
+    let statusEl = document.getElementById('connection-status');
+    if (!statusEl) {
+        statusEl = document.createElement('div');
+        statusEl.id = 'connection-status';
+        statusEl.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
+            transition: opacity 0.3s;
+        `;
+        document.body.appendChild(statusEl);
+    }
+    
+    statusEl.textContent = message;
+    statusEl.style.opacity = message === 'Connected' ? '0' : '1';
+}
+
+// Load saved state on page load
 document.addEventListener('DOMContentLoaded', () => {
     setupBackgroundAnimation();
     setupAudioPermission();
+    
+    try {
+        const savedUpdateTime = localStorage.getItem('gameLastUpdateTime');
+        if (savedUpdateTime) {
+            gameState.lastUpdateTime = parseInt(savedUpdateTime);
+        }
+    } catch (error) {
+        console.error('Error loading saved state:', error);
+    }
 });
 
 window.actions = actions;
@@ -472,4 +616,20 @@ function renderQuestion(question) {
     if (questionHeader) {
         questionHeader.textContent = question;
     }
+}
+
+function getGameState(gameState) {
+    const { currentQuestionIndex, questions, gameStarted, revealedQuestions, wrongAnswers, teamNames, assignedPoints, gameEnded, finishedEarly } = gameState;
+    const currentQuestion = questions[currentQuestionIndex];
+    const isQuestionRevealed = revealedQuestions.includes(currentQuestionIndex);
+    const anyAnswerRevealed = currentQuestion.answers.some(answer => answer.revealed);
+    const allAnswersRevealed = currentQuestion.answers.every(answer => answer.revealed);
+    const isFirstQuestion = currentQuestionIndex === 0;
+    const isLastQuestion = currentQuestionIndex === questions.length - 1;
+
+    return { currentQuestion, isQuestionRevealed, gameStarted, isFirstQuestion, isLastQuestion, allAnswersRevealed, gameEnded, finishedEarly };
+}
+
+function anyAnswerRevealed(currentQuestion) {
+    return currentQuestion.answers.some(answer => answer.revealed);
 }

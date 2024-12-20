@@ -238,6 +238,10 @@ body {
     justify-content: center;
 }
 
+.btn i {
+    margin-right: 0.5em;
+}
+
 .btn.primary {
     background-color: var(--revealed-color);
     color: var(--revealed-text-color);
@@ -458,4 +462,27 @@ body {
     animation: pop 3s ease-in-out infinite;
     max-width: 100%;
     height: auto;
+}
+
+.admin-section,
+.admin-section .section-header,
+.admin-section .section-header h2,
+.admin-section .section-content,
+.admin-controls,
+.admin-controls .control-group,
+.danger-button,
+.danger-button:hover,
+.game-button i,
+.admin-button,
+.admin-button:hover,
+.file-upload,
+.control-button,
+.control-button:hover,
+.control-button i,
+.control-row {
+    /* Remove all custom styles */
+}
+
+.file-upload input[type="file"] {
+    display: none;
 }
